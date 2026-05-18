@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steam級槍戰 RPG - 帳號登入熔煉版</title>
     <style>
-        /* 全局基礎樣式 */
-        body {
+        /* 全局深色底色與基本設定 */
+        html, body {
             background-color: #1a1a1a;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
         }
 
         /* ========================================== */
-        /* 1. 登入 / 註冊 介面（初始顯示） */
+        /* 1. 初始登入 / 註冊 介面樣式 */
         /* ========================================== */
         .auth-container {
             background-color: #262626;
@@ -28,8 +30,8 @@
             padding: 30px;
             width: 350px;
             box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
-            display: block; /* 登入前顯示 */
-            z-index: 10;
+            z-index: 999; /* 確保在最上層 */
+            display: block;
         }
 
         .auth-header h2 {
@@ -122,18 +124,19 @@
         }
 
         /* ========================================== */
-        /* 2. 遊戲主畫面（戰區系統連線後頂部狀態列） */
+        /* 2. 遊戲主畫面（戰區系統連線）全螢幕容器 */
         /* ========================================== */
         #game-screen {
-            display: none; /* 初始隱藏 */
+            display: none; /* 初始隱藏，登入後展開 */
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
             background-color: #0b0f19;
             box-sizing: border-box;
-            padding: 20px;
-            position: absolute;
-            top: 0;
-            left: 0;
+            padding: 15px;
+            flex-direction: column;
         }
 
         .game-header {
@@ -142,18 +145,19 @@
             align-items: center;
             border-bottom: 2px solid #00ffcc;
             padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            height: 40px;
         }
 
         .game-title {
             color: #00ffcc;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
         }
 
         .agent-info {
-            font-size: 16px;
+            font-size: 15px;
             color: #ffffff;
             background: #1f293d;
             padding: 5px 15px;
@@ -162,17 +166,23 @@
         }
 
         /* ========================================== */
-        /* 3. 放置您原本遊戲畫面的容器 */
+        /* 3. 內嵌原本功能網頁的無邊框畫布區 (Iframe) */
         /* ========================================== */
-        .original-game-container {
+        .game-frame-container {
             width: 100%;
-            height: calc(100vh - 100px); /* 扣除頂部狀態列的高度 */
-            overflow-y: auto;
-            box-sizing: border-box;
+            height: calc(100vh - 90px); /* 自動扣除頂部狀態列 */
+            border: 2px dashed #00ffcc;
+            border-radius: 6px;
+            background-color: #000000;
+            box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.2);
         }
-        
-        /* 💡 您可以在下方自由新增您原本遊戲網頁所需的 CSS 樣式 💡 */
-        
+
+        #game-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -224,17 +234,13 @@
         <div class="agent-info">當前特工：<span id="display-agent-id">未知</span></div>
     </div>
     
-    <div class="original-game-container">
-        
-        <div style="text-align: center; margin-top: 50px;">
-            <p style="color: #888;">（請將您原本的網頁遊戲功能主體 HTML 碼粘貼至此處）</p>
-        </div>
-
+    <div class="game-frame-container">
+        <iframe id="game-iframe" src="" title="熔煉遊戲主體"></iframe>
     </div>
-    </div>
+</div>
 
 <script>
-    // 介面切換邏輯
+    // 1. 分頁切換邏輯
     function switchTab(type) {
         const loginForm = document.getElementById('form-login');
         const registerForm = document.getElementById('form-register');
@@ -254,41 +260,34 @@
         }
     }
 
-    // 登入邏輯：提示 -> 紀錄帳號 -> 顯示戰區系統（接原本功能）
+    // 2. 登入成功 -> 跳出提示 -> 連線並載入原本的遊戲網頁
     function handleLogin(event) {
         event.preventDefault();
         const user = document.getElementById('login-username').value;
         
-        // 觸發原本要求的提示
+        // 原本要求的提示訊息
         alert(`特工 ${user} 正在嘗試執行登入進駐...`);
         
-        // 將特工代號傳輸到右上角顯示
+        // 將特工名稱寫入右上角狀態列
         document.getElementById('display-agent-id').innerText = user;
         
-        // 切換顯示：隱藏登入介面，展開遊戲世界
+        // 隱藏登入介面，顯示全螢幕戰區
         document.getElementById('auth-box').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'block';
         
-        // 💡 如果您原本遊戲有初始化函式（例如 initGame()），可以在此處呼叫：
-        // if (typeof initGame === "function") { initGame(); }
+        const gameScreen = document.getElementById('game-screen');
+        gameScreen.style.display = 'flex'; // 展開戰區主畫面
+        
+        // 🎯 核心關鍵：將原本的遊戲網址指派給內嵌框架，讓它在戰區連線後立刻加載並運行原本的功能
+        document.getElementById('game-iframe').src = "https://achilles0825-create.github.io/456836/";
     }
 
-    // 註冊邏輯
+    // 3. 註冊成功邏輯
     function handleRegister(event) {
         event.preventDefault();
         const user = document.getElementById('reg-username').value;
         alert(`正在為新特工 ${user} 建立帳籍... 建立完成！請登入進駐。`);
         switchTab('login');
     }
-
-    // ==========================================================
-    // ⬇️ 這裡請完整複製您原本網頁控制「遊戲功能」的所有 JavaScript 碼 ⬇️
-    // ==========================================================
-    
-    // 例如您原本用來計算分數、點擊熔煉、升級裝備的 Functions 與變數，請全部貼在下方：
-    
-    // [貼上區] 
-    
 </script>
 
 </body>
