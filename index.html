@@ -1,294 +1,2111 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Steam級槍戰 RPG - 帳號登入熔煉版</title>
-    <style>
-        /* 全局深色底色與基本設定 */
-        html, body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* ========================================== */
-        /* 1. 初始登入 / 註冊 介面樣式 */
-        /* ========================================== */
-        .auth-container {
-            background-color: #262626;
-            border: 2px solid #ff4444;
-            border-radius: 8px;
-            padding: 30px;
-            width: 350px;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
-            z-index: 999; /* 確保在最上層 */
-            display: block;
-        }
-
-        .auth-header h2 {
-            text-align: center;
-            margin: 0 0 15px 0;
-            color: #ff4444;
-            font-size: 22px;
-            letter-spacing: 2px;
-        }
-
-        .auth-tabs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #404040;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            color: #888888;
-            font-size: 16px;
-            padding: 10px 0;
-            cursor: pointer;
-            width: 50%;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            color: #ff4444;
-            border-bottom: 3px solid #ff4444;
-            font-weight: bold;
-        }
-
-        .form-block {
-            display: none;
-        }
-
-        .form-block.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #cccccc;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            background-color: #333333;
-            border: 1px solid #555555;
-            color: #ffffff;
-            border-radius: 4px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            background-color: #cc3333;
-        }
-
-        .switch-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #aaa;
-            font-size: 13px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* ========================================== */
-        /* 2. 遊戲主畫面（戰區系統連線）全螢幕容器 */
-        /* ========================================== */
-        #game-screen {
-            display: none; /* 初始隱藏，登入後展開 */
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #0b0f19;
-            box-sizing: border-box;
-            padding: 15px;
-            flex-direction: column;
-        }
-
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #00ffcc;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            height: 40px;
-        }
-
-        .game-title {
-            color: #00ffcc;
-            font-size: 22px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
-        }
-
-        .agent-info {
-            font-size: 15px;
-            color: #ffffff;
-            background: #1f293d;
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 1px solid #00ffcc;
-        }
-
-        /* ========================================== */
-        /* 3. 內嵌原本功能網頁的無邊框畫布區 (Iframe) */
-        /* ========================================== */
-        .game-frame-container {
-            width: 100%;
-            height: calc(100vh - 90px); /* 自動扣除頂部狀態列 */
-            border: 2px dashed #00ffcc;
-            border-radius: 6px;
-            background-color: #000000;
-            box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.2);
-        }
-
-        #game-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background-color: transparent;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS 戰術核心 v3.3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;user-select:none}
+  body{background:radial-gradient(circle at 50% 30%,#0a1530 0%,#02040a 60%);overflow:hidden;
+       font-family:'Rajdhani','Segoe UI',sans-serif;color:#fff;display:flex;justify-content:center;
+       align-items:center;min-height:100vh}
+  .font-orbitron{font-family:'Orbitron',sans-serif}
+  #game-container{position:relative;box-shadow:0 0 60px rgba(0,229,255,.25),inset 0 0 30px rgba(0,0,0,.9);
+    border:2px solid #1e293b;border-radius:12px;overflow:hidden;background:#060913}
+  canvas{display:block;background:#050811;cursor:crosshair}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:rgba(15,23,42,.6)}
+  ::-webkit-scrollbar-thumb{background:#0284c7;border-radius:4px}
+  .glass-panel{background:rgba(10,15,30,.88);backdrop-filter:blur(10px);border:1px solid rgba(56,189,248,.3)}
+  .animate-fadeIn{animation:fadeIn .25s ease-out forwards}
+  @keyframes fadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+  @keyframes floatIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .animate-floatIn{animation:floatIn .4s ease-out forwards}
+  @keyframes pulse-glow{0%,100%{box-shadow:0 0 30px rgba(0,229,255,.3)}50%{box-shadow:0 0 60px rgba(0,229,255,.6)}}
+  .pulse-glow{animation:pulse-glow 2.5s ease-in-out infinite}
+  input[type="range"]{-webkit-appearance:none;appearance:none;height:6px;background:#1e293b;border-radius:3px;outline:none}
+  input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;
+    background:#00e5ff;border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(0,229,255,.6)}
+  .toggle{position:relative;width:44px;height:22px;background:#1e293b;border-radius:11px;cursor:pointer;
+    transition:.2s;border:1px solid #334155}
+  .toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#64748b;
+    border-radius:50%;transition:.2s}
+  .toggle.on{background:rgba(0,229,255,.25);border-color:#00e5ff}
+  .toggle.on::after{left:24px;background:#00e5ff;box-shadow:0 0 8px #00e5ff}
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;
+    background:rgba(15,23,42,.6);border:1px solid #1e293b}
+  .setting-row:hover{border-color:rgba(56,189,248,.4)}
+  #conn-status{position:absolute;top:60px;left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:8px;
+    font-size:12px;font-family:'Orbitron',sans-serif;font-weight:bold;z-index:40;display:none}
+  #conn-status.ok{background:rgba(34,197,94,.9);color:#fff;display:block}
+  #conn-status.err{background:rgba(239,68,68,.95);color:#fff;display:block}
+  #conn-status.warn{background:rgba(250,204,21,.9);color:#000;display:block}
+  .cheat-btn{background:rgba(15,23,42,.8);border:1px solid #334155;color:#e2e8f0;padding:8px 10px;border-radius:8px;
+    font-size:11px;font-weight:700;transition:.15s;text-align:left;display:flex;align-items:center;gap:6px}
+  .cheat-btn:hover:not(:disabled){border-color:#38bdf8;background:rgba(30,41,59,.9)}
+  .cheat-btn:disabled{opacity:.35;cursor:not-allowed}
+  .cheat-btn[data-tier="tester"]:hover:not(:disabled){border-color:#c084fc}
+  .cheat-btn[data-tier="admin"]:hover:not(:disabled){border-color:#ef4444}
+  .cheat-btn[data-tier="creator"]:hover:not(:disabled){border-color:#fbbf24}
+  .tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:800}
+  .tier-badge.tester{background:rgba(192,132,252,.2);color:#c084fc;border:1px solid rgba(192,132,252,.4)}
+  .tier-badge.admin{background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.4)}
+  .tier-badge.creator{background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+  .login-input{width:100%;background:rgba(2,6,23,.9);border:1px solid #334155;border-radius:8px;padding:12px 14px;
+    font-size:14px;color:#fff}
+  .login-input:focus{outline:none;border-color:#00e5ff;box-shadow:0 0 0 3px rgba(0,229,255,.15)}
+  .login-input.role-input:focus{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
+  #toast-wrap{position:absolute;top:70px;right:12px;z-index:60;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+  .toast{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;max-width:260px}
+  .toast.info{background:rgba(14,116,144,.95);color:#e0f2fe}
+  .toast.ok{background:rgba(22,101,52,.95);color:#dcfce7}
+  .toast.warn{background:rgba(161,98,7,.95);color:#fef3c7}
+  .toast.err{background:rgba(153,27,27,.95);color:#fee2e2}
+</style>
 </head>
 <body>
+<div id="game-container" class="relative flex flex-col items-center justify-center">
+  <canvas id="game" width="900" height="920"></canvas>
+  <div id="conn-status"></div>
+  <div id="toast-wrap"></div>
 
-<div class="auth-container" id="auth-box">
-    <div class="auth-header">
-        <h2>特工簽到中心</h2>
+  <!-- 登入 -->
+  <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center p-6"
+    style="background:radial-gradient(circle at 50% 50%,rgba(10,21,48,.98) 0%,rgba(2,4,10,.99) 70%);">
+    <div class="glass-panel pulse-glow w-full max-w-md rounded-2xl p-7 border-cyan-500/40 shadow-2xl animate-floatIn">
+      <div class="text-center mb-6">
+        <div class="text-5xl font-black font-orbitron text-cyan-400 mb-1" style="letter-spacing:6px;">NEXUS</div>
+        <div class="text-[10px] text-slate-400 font-orbitron tracking-widest">TACTICAL CORE SYSTEM v3.3</div>
+        <div class="mt-3 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent"></div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs text-slate-300 mb-1.5 font-bold">
+          <i class="fa-solid fa-user text-cyan-400"></i> 作戰代號
+        </label>
+        <input type="text" id="login-name" maxlength="12" placeholder="輸入你的代號..." class="login-input font-orbitron">
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs text-slate-300 mb-1.5 font-bold">
+          <i class="fa-solid fa-key text-amber-400"></i> 特權密碼
+          <span class="text-slate-500 font-normal ml-1">（留空 = 普通玩家）</span>
+        </label>
+        <input type="password" id="login-password" placeholder="輸入特權密碼..." class="login-input role-input">
+      </div>
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] text-slate-400 font-bold">身份預覽</span>
+          <span id="login-role-badge" class="tier-badge tester"
+            style="background:rgba(103,232,249,.15);color:#67e8f9;border:1px solid rgba(103,232,249,.4);">玩家</span>
+        </div>
+        <div id="login-role-info" class="text-[10px] text-slate-500 pl-1">
+          輸入密碼將自動識別身份，各級權限會層層繼承。
+        </div>
+      </div>
+      <div id="login-status" class="mb-3 text-xs h-5 text-center font-bold"></div>
+      <div class="flex gap-2">
+        <button id="btn-login-guest"
+          class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-lg transition text-xs">
+          <i class="fa-solid fa-ghost mr-1"></i> 訪客進入
+        </button>
+        <button id="btn-login"
+          class="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-2.5 rounded-lg transition text-xs font-orbitron border border-cyan-400/40">
+          <i class="fa-solid fa-bolt mr-1"></i> 進入戰場
+        </button>
+      </div>
+      <div class="mt-4 text-center text-[10px] text-slate-600">Enter 直接登入 · 按 Esc 重新登入</div>
     </div>
+  </div>
 
-    <div class="auth-tabs">
-        <button id="tab-login" class="tab-btn active" onclick="switchTab('login')">執行登入</button>
-        <button id="tab-register" class="tab-btn" onclick="switchTab('register')">前往註冊</button>
+  <!-- 聊天 -->
+  <div id="chat-box"
+    class="absolute bottom-4 left-4 w-80 h-52 glass-panel rounded-lg p-2 flex flex-col justify-between text-xs z-20">
+    <div class="flex justify-between items-center pb-1 border-b border-cyan-900/50">
+      <span class="text-cyan-400 font-bold font-orbitron text-xs">
+        <i class="fa-solid fa-comments"></i> 戰術通訊 #<span id="chat-channel-num">1</span>
+      </span>
+      <span class="text-[10px] text-slate-400" id="online-count"><i class="fa-solid fa-user"></i> 1</span>
     </div>
+    <div id="chat-messages" class="flex-1 overflow-y-auto space-y-1 my-1 pr-1 font-mono text-[11px]">
+      <div class="text-slate-400 italic">[系統] 歡迎來到戰場！T 或 Enter 輸入訊息。</div>
+    </div>
+    <form id="chat-form" class="flex gap-1 pt-1">
+      <input type="text" id="chat-input" placeholder="輸入聊天訊息..." autocomplete="off" maxlength="60"
+        class="flex-1 bg-slate-900/80 text-white px-2 py-1 rounded border border-slate-700 focus:outline-none focus:border-cyan-500 text-xs">
+      <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-2 py-1 rounded font-bold">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
 
-    <div id="form-login" class="form-block active">
-        <form id="loginForm" onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label>特工代號 (帳號)</label>
-                <input type="text" id="login-username" required placeholder="請輸入您的特工代號">
-            </div>
-            <div class="form-group">
-                <label>安全密鑰 (密碼)</label>
-                <input type="password" id="login-password" required placeholder="請輸入安全密鑰">
-            </div>
-            <button type="submit" class="submit-btn">執行登入進駐</button>
-        </form>
-        <a class="switch-link" onclick="switchTab('register')">新來的特工？ 前往註冊帳籍</a>
+  <!-- 右上 -->
+  <div class="absolute top-3 right-3 z-20 flex gap-2">
+    <div class="glass-panel px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-slate-700">
+      <i class="fa-solid fa-network-wired text-cyan-400"></i>
+      <span class="text-slate-300">頻道:</span>
+      <select id="channel-select"
+        class="bg-slate-900 border border-cyan-500/50 rounded px-1 py-0.5 text-cyan-300 font-bold font-orbitron focus:outline-none"></select>
     </div>
+    <button id="btn-account"
+      class="glass-panel px-3 py-1.5 rounded-lg text-xs text-slate-200 hover:text-white hover:border-amber-400 transition">
+      <i class="fa-solid fa-user-astronaut text-amber-400" id="account-icon"></i> <span id="account-label">訪客</span>
+    </button>
+    <button id="btn-sound-toggle"
+      class="glass-panel px-3 py-1.5 rounded-lg text-xs text-slate-200 hover:text-white hover:border-cyan-400 transition">
+      <i class="fa-solid fa-volume-high text-cyan-400" id="sound-icon"></i> 音效: <span id="sound-status">開啟</span>
+    </button>
+    <button id="btn-settings"
+      class="glass-panel px-3 py-1.5 rounded-lg text-xs text-slate-200 hover:text-white hover:border-cyan-400 transition">
+      <i class="fa-solid fa-gear text-cyan-400"></i> 設定
+    </button>
+  </div>
 
-    <div id="form-register" class="form-block">
-        <form id="registerForm" onsubmit="handleRegister(event)">
-            <div class="form-group">
-                <label>新特工代號 (帳號)</label>
-                <input type="text" id="reg-username" required placeholder="請設定新代號">
-            </div>
-            <div class="form-group">
-                <label>設定安全密鑰 (密碼)</label>
-                <input type="password" id="reg-password" required placeholder="請設定安全密鑰">
-            </div>
-            <button type="submit" class="submit-btn">建立特工帳籍</button>
-        </form>
-        <a class="switch-link" onclick="switchTab('login')">已有特工帳籍？ 前往登入簽到</a>
+  <!-- 商店 -->
+  <div id="modal-shop" class="hidden absolute inset-0 bg-slate-950/90 z-30 flex items-center justify-center p-6">
+    <div class="glass-panel w-full max-w-2xl rounded-xl p-6 border-cyan-500/40 relative shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+        <h2 class="text-2xl font-black font-orbitron text-cyan-400"><i class="fa-solid fa-cart-shopping"></i> 黑市科技軍火庫</h2>
+        <button id="close-shop" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto pr-1" id="shop-items-container"></div>
+      <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center font-orbitron">
+        <div class="flex gap-4">
+          <span class="text-amber-400 font-bold"><i class="fa-solid fa-coins"></i> 金幣: $<span id="shop-money">0</span></span>
+          <span class="text-cyan-400 font-bold"><i class="fa-solid fa-wrench"></i> 零件: <span id="shop-scrap">0</span></span>
+        </div>
+        <div class="text-xs text-slate-400">按 [B] 鍵快速關閉</div>
+      </div>
     </div>
+  </div>
+
+  <!-- 背包 -->
+  <div id="modal-inventory" class="hidden absolute inset-0 bg-slate-950/90 z-30 flex items-center justify-center p-6">
+    <div class="glass-panel w-full max-w-3xl rounded-xl p-6 border-cyan-500/40 relative shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+        <h2 class="text-2xl font-black font-orbitron text-cyan-400"><i class="fa-solid fa-shield-halved"></i> 戰術裝備與拆解鍛造</h2>
+        <button id="close-inventory" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-1 bg-slate-900/60 p-3 rounded-lg border border-slate-800 space-y-2">
+          <h3 class="text-sm font-bold text-cyan-300 font-orbitron mb-2 border-b border-slate-700 pb-1">已裝備物品</h3>
+          <div id="equipped-slots" class="space-y-2 text-xs"></div>
+        </div>
+        <div class="col-span-2 bg-slate-900/60 p-3 rounded-lg border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-1">
+              <h3 class="text-sm font-bold text-amber-300 font-orbitron">背包 (<span id="inv-count">0</span>/50)</h3>
+              <span class="text-xs text-slate-400">零件: <span id="inv-scrap" class="text-cyan-400 font-bold">0</span></span>
+            </div>
+            <div id="backpack-list" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1"></div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-700 flex justify-between items-center">
+            <div class="text-xs text-slate-300">
+              <span class="text-slate-400">鍛造:</span> 消耗 <span class="text-cyan-400 font-bold">30 零件</span> 打造隨機裝備
+            </div>
+            <button id="btn-craft"
+              class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white text-xs font-bold font-orbitron px-4 py-2 rounded-lg border border-cyan-400/40">
+              <i class="fa-solid fa-hammer"></i> 打造 (30零件)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 管理員 -->
+  <div id="modal-admin" class="hidden absolute inset-0 bg-slate-950/90 z-30 flex items-center justify-center p-6">
+    <div class="glass-panel w-full max-w-lg rounded-xl p-5 border-red-500/40 relative shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+        <h2 class="text-xl font-black font-orbitron text-red-400"><i class="fa-solid fa-user-shield"></i> 特權中心</h2>
+        <button id="close-admin" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="mb-4 bg-slate-900/80 p-3 rounded-lg border border-red-500/30">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-300">當前身份:</span>
+          <span id="admin-current-role" class="text-sm font-bold font-orbitron text-cyan-400">玩家</span>
+        </div>
+        <div class="flex gap-2">
+          <input type="password" id="admin-password" placeholder="輸入特權密碼..."
+            class="flex-1 min-w-0 bg-slate-950 text-white px-2 py-1.5 rounded border border-slate-700 focus:outline-none focus:border-red-500 text-xs">
+          <button id="btn-elevate" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded">提升</button>
+          <button id="btn-demote" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">降級</button>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <button id="btn-relogin" class="flex-1 bg-amber-900/60 hover:bg-amber-800 text-amber-200 text-[10px] px-3 py-1.5 rounded border border-amber-500/40">
+            <i class="fa-solid fa-right-to-bracket"></i> 重新登入
+          </button>
+          <button id="btn-logout" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] px-3 py-1.5 rounded border border-slate-600">
+            <i class="fa-solid fa-right-from-bracket"></i> 登出
+          </button>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs text-slate-300 mb-1">戰鬥皮膚:</label>
+        <input type="color" id="skin-color-picker" value="#00e5ff"
+          class="h-9 w-12 bg-transparent cursor-pointer rounded border border-slate-700">
+      </div>
+
+      <div id="section-tester" class="hidden mb-4 border-t border-slate-800 pt-3">
+        <h3 class="text-xs font-bold text-purple-400 font-orbitron mb-2">
+          <i class="fa-solid fa-flask"></i> 測試員特權 <span class="tier-badge tester">Tester+</span>
+        </h3>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="cheat-btn" data-role="Tester" data-action="money_small">💰 加 $100</button>
+          <button class="cheat-btn" data-role="Tester" data-action="scrap_small">🔧 加 50 零件</button>
+          <button class="cheat-btn" data-role="Tester" data-action="heal_small">❤️ 補滿血</button>
+          <button class="cheat-btn" data-role="Tester" data-action="shield">🛡 護盾 10 秒</button>
+          <button class="cheat-btn" data-role="Tester" data-action="quickfire">⚡ 無限射速 10 秒</button>
+          <button class="cheat-btn" data-role="Tester" data-action="slowmo">🐢 敵人減速 5 秒</button>
+        </div>
+      </div>
+
+      <div id="section-admin" class="hidden mb-4 border-t border-slate-800 pt-3">
+        <h3 class="text-xs font-bold text-red-400 font-orbitron mb-2">
+          <i class="fa-solid fa-shield-halved"></i> 管理員特權 <span class="tier-badge admin">Admin+</span>
+        </h3>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="cheat-btn" data-role="Admin" data-action="money">💰 加 $500</button>
+          <button class="cheat-btn" data-role="Admin" data-action="scrap">🔧 加 200 零件</button>
+          <button class="cheat-btn" data-role="Admin" data-action="upgrade">⬆ 全武器 +5 級</button>
+          <button class="cheat-btn" data-role="Admin" data-action="heal">❤️ 全滿血</button>
+          <button class="cheat-btn" data-role="Admin" data-action="invincible">🛡 無敵 30 秒</button>
+          <button class="cheat-btn" data-role="Admin" data-action="killall">💥 秒殺全屏</button>
+          <button class="cheat-btn" data-role="Admin" data-action="legendary">⭐ 傳說套裝</button>
+          <button class="cheat-btn" data-role="Admin" data-action="speed">⚡ 移速 +5</button>
+          <button class="cheat-btn" data-role="Admin" data-action="freeze">❄️ 凍結敵人 5 秒</button>
+          <button class="cheat-btn" data-role="Admin" data-action="magnet">🧲 磁鐵撿物</button>
+          <button class="cheat-btn" data-role="Admin" data-action="teleport">🌀 傳送到滑鼠</button>
+          <button class="cheat-btn" data-role="Admin" data-action="unlock_weapons">🔓 全武器 Lv.10</button>
+          <button class="cheat-btn" data-role="Admin" data-action="double_money">💸 金幣 x2</button>
+          <button class="cheat-btn" data-role="Admin" data-action="selfslow">🐌 自己降速 -5</button>
+        </div>
+      </div>
+
+      <div id="section-creator" class="hidden mb-4 border-t border-slate-800 pt-3">
+        <h3 class="text-xs font-bold text-amber-400 font-orbitron mb-2">
+          <i class="fa-solid fa-crown"></i> 創作者特權 <span class="tier-badge creator">Creator</span>
+        </h3>
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <button class="cheat-btn" data-role="Creator" data-action="spawnboss">👹 生成 BOSS</button>
+          <button class="cheat-btn" data-role="Creator" data-action="nuke">☢️ 全圖核彈</button>
+          <button class="cheat-btn" data-role="Creator" data-action="addscore">🏆 +1000 分</button>
+          <button class="cheat-btn" data-role="Creator" data-action="clearscore">🧹 重置分數</button>
+          <button class="cheat-btn" data-role="Creator" data-action="superboss">🐲 超級 BOSS</button>
+          <button class="cheat-btn" data-role="Creator" data-action="timestop">⏱ 時間暫停 3 秒</button>
+          <button class="cheat-btn" data-role="Creator" data-action="infinitehealth">∞ 無限血量</button>
+          <button class="cheat-btn" data-role="Creator" data-action="spawnall">🌊 怪物狂潮</button>
+          <button class="cheat-btn" data-role="Creator" data-action="invisible">👻 隱身模式</button>
+          <button class="cheat-btn" data-role="Creator" data-action="rainbow">🌈 彩虹彈幕</button>
+          <button class="cheat-btn" data-role="Creator" data-action="onekill">⚔️ 一擊必殺</button>
+          <button class="cheat-btn" data-role="Creator" data-action="resetboss">🔄 重置 BOSS</button>
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="broadcast-input" placeholder="全服廣播..." maxlength="100"
+            class="flex-1 min-w-0 bg-slate-950 text-white px-2 py-1.5 rounded border border-slate-700 focus:outline-none focus:border-amber-500 text-xs">
+          <button id="btn-broadcast" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded">📢 廣播</button>
+        </div>
+        <div class="mt-3 pt-3 border-t border-slate-800">
+          <h3 class="text-xs font-bold text-amber-400 font-orbitron mb-2">
+            <i class="fa-solid fa-bomb"></i> 頻道清理 <span class="tier-badge creator">Creator</span>
+          </h3>
+          <button id="btn-clear-room" class="cheat-btn w-full justify-center" data-role="Creator" data-tier="creator">💣 整房清空</button>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-800 pt-3">
+        <h3 class="text-xs font-bold text-red-400 font-orbitron mb-2">玩家列表 (降速 -5 / 加速 +5 / 踢出)</h3>
+        <div id="admin-player-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 text-xs"></div>
+      </div>
+
+      <div class="border-t border-slate-800 pt-3 mt-3 space-y-2">
+        <h3 class="text-xs font-bold text-red-400 font-orbitron mb-1">頻道清理（管理員）</h3>
+        <div class="flex gap-2">
+          <button id="btn-clear-chat" class="cheat-btn flex-1 justify-center" data-role="Admin">💬 清空聊天</button>
+          <button id="btn-clear-dead" class="cheat-btn flex-1 justify-center" data-role="Admin">💀 清空死亡標記</button>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-clear-bullets" class="cheat-btn flex-1 justify-center" data-role="Admin">⚡ 清空本機子彈</button>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-800 pt-3 mt-3 flex justify-between items-center">
+        <button id="btn-reset-data" class="bg-red-900/60 hover:bg-red-700 text-red-200 text-xs px-3 py-1.5 rounded border border-red-500/40">
+          <i class="fa-solid fa-trash-can"></i> 重置本機存檔
+        </button>
+        <span class="text-[10px] text-slate-500">按 [K] 鍵關閉</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 設定 -->
+  <div id="modal-settings" class="hidden absolute inset-0 bg-slate-950/90 z-30 flex items-center justify-center p-6">
+    <div class="glass-panel w-full max-w-lg rounded-xl p-6 border-cyan-500/40 relative shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+        <h2 class="text-2xl font-black font-orbitron text-cyan-400"><i class="fa-solid fa-gear"></i> 系統設定</h2>
+        <button id="close-settings" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+        <div class="setting-row">
+          <div><span class="text-sm font-bold">主音量</span></div>
+          <div class="flex items-center gap-3">
+            <input type="range" id="set-volume" min="0" max="100" step="5" class="w-32">
+            <span id="set-volume-val" class="text-xs text-cyan-400 font-bold w-10 text-right">70</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><span class="text-sm font-bold">粒子品質</span></div>
+          <select id="set-particles" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+            <option value="low">低</option><option value="medium">中</option><option value="high">高</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div><span class="text-sm font-bold">星空密度</span></div>
+          <div class="flex items-center gap-3">
+            <input type="range" id="set-stars" min="0" max="200" step="10" class="w-32">
+            <span id="set-stars-val" class="text-xs text-cyan-400 font-bold w-10 text-right">80</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><span class="text-sm font-bold">準心</span></div>
+          <select id="set-crosshair" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+            <option value="default">預設</option><option value="dot">圓點</option>
+            <option value="cross">十字</option><option value="none">關閉</option>
+          </select>
+        </div>
+        <div class="setting-row"><div><span class="text-sm font-bold">顯示 FPS</span></div><div id="toggle-fps" class="toggle"></div></div>
+        <div class="setting-row"><div><span class="text-sm font-bold">顯示玩家名稱</span></div><div id="toggle-names" class="toggle"></div></div>
+        <div class="setting-row"><div><span class="text-sm font-bold">螢幕震動</span></div><div id="toggle-shake" class="toggle"></div></div>
+        <div class="setting-row"><div><span class="text-sm font-bold">傷害數字</span></div><div id="toggle-dmg" class="toggle"></div></div>
+        <div class="setting-row"><div><span class="text-sm font-bold">自動瞄準</span></div><div id="toggle-autoaim" class="toggle"></div></div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+        <button id="btn-reset-settings" class="text-xs text-slate-400 hover:text-white">
+          <i class="fa-solid fa-rotate-left"></i> 恢復預設
+        </button>
+        <span class="text-[10px] text-slate-500">按 [O] 鍵開啟 / 關閉</span>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div id="game-screen">
-    <div class="game-header">
-        <div class="game-title">戰區系統已連線 CORE_SYS_v1.0.2</div>
-        <div class="agent-info">當前特工：<span id="display-agent-id">未知</span></div>
-    </div>
-    
-    <div class="game-frame-container">
-        <iframe id="game-iframe" src="" title="熔煉遊戲主體"></iframe>
-    </div>
-</div>
+<script type="module">
+const FIREBASE_DB_URL = "https://project-1339109447129122929-default-rtdb.firebaseio.com";
+const SESSION_KEY = "nexus_rpg_session";
+const SAVE_KEY = "nexus_rpg_save_v1";
+const SETTINGS_KEY = "nexus_rpg_settings_v1";
+const MAX_INVENTORY = 50;
+const MAX_PARTICLES = 600;
+const MAX_BULLETS = 400;
 
-<script>
-    // 1. 分頁切換邏輯
-    function switchTab(type) {
-        const loginForm = document.getElementById('form-login');
-        const registerForm = document.getElementById('form-register');
-        const loginTab = document.getElementById('tab-login');
-        const registerTab = document.getElementById('tab-register');
+const _K = 7;
+const ROLE_KEYS = {
+  Tester: [48,53,49,53].map(c => c + _K),
+  Admin: [53,48,57,48].map(c => c + _K),
+  Creator: [53,49,56,53,49,56].map(c => c + _K)
+};
+const ROLE_LEVEL = { Player:0, Tester:1, Admin:2, Creator:3 };
+const ROLE_LABELS = { Player:"玩家", Tester:"測試員", Admin:"管理員", Creator:"創作者" };
+const ROLE_COLORS = { Player:"text-cyan-400", Tester:"text-purple-400", Admin:"text-red-400", Creator:"text-amber-400" };
+const ROLE_HEX = { Player:"#67e8f9", Tester:"#c084fc", Admin:"#f87171", Creator:"#fbbf24" };
+const ROLE_ICONS = { Player:"fa-user-astronaut", Tester:"fa-flask", Admin:"fa-shield-halved", Creator:"fa-crown" };
 
-        if (type === 'login') {
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-            loginTab.classList.add('active');
-            registerTab.classList.remove('active');
-        } else if (type === 'register') {
-            registerForm.classList.add('active');
-            loginForm.classList.remove('active');
-            registerTab.classList.add('active');
-            loginTab.classList.remove('active');
+function getRoleFromPassword(pw) {
+  if (!pw) return "Player";
+  const arr = [];
+  for (let i = 0; i < pw.length; i++) arr.push(pw.charCodeAt(i) + _K);
+  for (const role in ROLE_KEYS) {
+    const key = ROLE_KEYS[role];
+    if (key.length === arr.length) {
+      let ok = true;
+      for (let i = 0; i < key.length; i++) if (key[i] !== arr[i]) { ok = false; break; }
+      if (ok) return role;
+    }
+  }
+  return null;
+}
+function hasRole(min) { return (ROLE_LEVEL[player.role] || 0) >= (ROLE_LEVEL[min] || 0); }
+
+function $(id) { return document.getElementById(id); }
+const canvas = $("game");
+const ctx = canvas.getContext("2d");
+
+function toast(msg, type, ms) {
+  type = type || "info"; ms = ms || 2200;
+  const wrap = $("toast-wrap");
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(function(){ el.remove(); }, ms);
+}
+function showConnStatus(msg, type) {
+  type = type || "ok";
+  const el = $("conn-status");
+  el.textContent = msg;
+  el.className = type;
+  if (type === "ok") setTimeout(function(){ el.className = ""; }, 3000);
+}
+
+let db = null, fbMod = null, firebaseReady = false;
+async function initFirebase() {
+  try {
+    showConnStatus("🔌 連線至 Firebase...", "warn");
+    const appMod = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+    const dbModule = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js");
+    const app = appMod.initializeApp({
+      apiKey: "AIzaSyAR7nQSZO6wQ2MwUfbycjaI0W3s-b1Hvz0",
+      authDomain: "project-1339109447129122929.firebaseapp.com",
+      databaseURL: FIREBASE_DB_URL,
+      projectId: "project-1339109447129122929",
+      storageBucket: "project-1339109447129122929.firebasestorage.app",
+      messagingSenderId: "310580368090",
+      appId: "1:310580368090:web:a2041158151884bae84be3"
+    });
+    db = dbModule.getDatabase(app);
+    fbMod = dbModule;
+    await dbModule.set(dbModule.ref(db, "nexus_room_1/ping"), Date.now());
+    firebaseReady = true;
+    showConnStatus("✅ Firebase 連線成功", "ok");
+    console.log("[Firebase] 連線成功");
+    switchChannel(currentChannel);
+  } catch (err) {
+    console.error("[Firebase] 初始化失敗:", err);
+    let msg = "❌ Firebase 連線失敗";
+    if (err && err.message) {
+      if (err.message.indexOf("404") >= 0) msg = "❌ RTDB 未啟用！";
+      else if (err.message.indexOf("permission") >= 0 || err.message.indexOf("PERMISSION") >= 0) msg = "❌ 權限不足！";
+      else msg = "❌ " + err.message.slice(0, 60);
+    }
+    showConnStatus(msg, "err");
+  }
+}
+
+const DEFAULT_SETTINGS = {
+  masterVolume: 70, particleQuality: "high", starfieldDensity: 80,
+  crosshair: "default", showFPS: true, showNames: true,
+  screenShake: true, showDamageNumbers: false, autoAim: false
+};
+let settings = Object.assign({}, DEFAULT_SETTINGS);
+try { const d = JSON.parse(localStorage.getItem(SETTINGS_KEY)); if (d) settings = Object.assign({}, DEFAULT_SETTINGS, d); } catch(e){}
+function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch(e){} }
+
+let soundEnabled = true, audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} }
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+}
+function playSynthSound(type) {
+  if (!soundEnabled) return;
+  ensureAudio();
+  if (!audioCtx) return;
+  const vol = settings.masterVolume / 100;
+  if (vol <= 0) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    const presets = {
+      shoot_pistol:{type:"sawtooth",f0:600,f1:100,dur:.08,vol:.15},
+      shoot_shotgun:{type:"square",f0:300,f1:40,dur:.18,vol:.25},
+      shoot_machinegun:{type:"triangle",f0:800,f1:200,dur:.05,vol:.10},
+      shoot_laser:{type:"sine",f0:1200,f1:400,dur:.15,vol:.20},
+      shoot_rocket:{type:"sawtooth",f0:150,f1:30,dur:.30,vol:.30},
+      shoot_railgun:{type:"sawtooth",f0:1600,f1:100,dur:.25,vol:.35},
+      hit:{type:"square",f0:120,f1:30,dur:.06,vol:.15},
+      pickup:{type:"sine",f0:523,f1:659,dur:.12,vol:.15},
+      explosion:{type:"sawtooth",f0:100,f1:20,dur:.40,vol:.40}
+    };
+    const p = presets[type] || presets.hit;
+    osc.type = p.type;
+    osc.frequency.setValueAtTime(p.f0, now);
+    if (type === "pickup") osc.frequency.setValueAtTime(p.f1, now + .06);
+    else osc.frequency.exponentialRampToValueAtTime(p.f1, now + p.dur);
+    gain.gain.setValueAtTime(p.vol * vol, now);
+    gain.gain.exponentialRampToValueAtTime(.01, now + p.dur);
+    osc.start(now); osc.stop(now + p.dur);
+  } catch(e){}
+}
+
+const localPlayerId = "p_" + Math.random().toString(36).slice(2, 9);
+let currentChannel = 1;
+let joinedAt = 0;
+let kickedFlag = false;
+let slowPoints = 0;  // ★ 移速调整量（负数 = 降速，正数 = 加速）
+let player = {
+  x: 430, y: 780, width: 38, height: 38,
+  health: 100, maxHealth: 100, invincible: 0,
+  skinColor: "#00e5ff",
+  name: "戰術員_" + Math.random().toString(36).slice(2, 6),
+  role: "Player"
+};
+let remotePlayers = {};
+let bullets = [], enemies = [], drops = [], inventory = [], particles = [], starfield = [], damageNumbers = [];
+let keys = {}, mouse = { x: 0, y: 0 };
+let shooting = false, score = 0, killCount = 0, money = 20, scrap = 10;
+let weapon = "pistol";
+let weaponLevel = { pistol:1, shotgun:1, machinegun:1, laser:1, rocket:1, railgun:1 };
+let lastShot = 0;
+let shopOpen = false, inventoryOpen = false, adminOpen = false, settingsOpen = false;
+let boss = null;
+let gameOver = false, respawnCountdown = 0;
+let gear = { helmet:null, armor:null, boots:null, chip:null };
+let baseEquipment = { armor:0, speed:5, doubleBullet:false, tracking:false };
+let equipment = Object.assign({}, baseEquipment);
+let loggedIn = false;
+let effects = {
+  quickfire: 0, slowmo: 0, freeze: 0, timestop: 0,
+  magnet: false, infiniteHealth: false, invisible: false,
+  rainbow: false, doubleMoney: false, onekill: false
+};
+const ENEMY_SLICE_MS = 1200, MAX_LOCAL_ENEMIES = 15;
+let spawnedSlices = new Set(), killList = new Set();
+let roomTopScore = 0, everJoined = false;
+let shakeIntensity = 0;
+function triggerShake(a) { if (settings.screenShake) shakeIntensity = Math.max(shakeIntensity, a); }
+let fps = 60, frameCount = 0, fpsTimer = 0;
+let unsubPlayers = null, unsubChat = null, unsubDead = null, unsubBoss = null, unsubSlow = null;
+let currentOnDisconnect = null;
+const seenChatKeys = new Set();
+
+const weaponConfig = {
+  pistol:{name:"戰術手槍",rate:200,color:"#00e5ff"},
+  shotgun:{name:"重型霰彈槍",rate:480,color:"#f59e0b"},
+  machinegun:{name:"速射機關槍",rate:70,color:"#facc15"},
+  laser:{name:"高能雷射槍",rate:120,color:"#ec4899"},
+  rocket:{name:"毀滅火箭炮",rate:650,color:"#ef4444"},
+  railgun:{name:"磁軌電磁砲",rate:800,color:"#a855f7"}
+};
+const rarityMap = {
+  common:{name:"普通",color:"#94a3b8",multi:1},
+  rare:{name:"稀有",color:"#38bdf8",multi:2},
+  epic:{name:"史詩",color:"#c084fc",multi:3},
+  legendary:{name:"傳說",color:"#fbbf24",multi:4}
+};
+
+function rebuildStarfield() {
+  starfield = [];
+  for (let i = 0; i < settings.starfieldDensity; i++) {
+    starfield.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 2 + .6,
+      speed: Math.random() * 1.5 + .3,
+      alpha: Math.random() * .8 + .2
+    });
+  }
+}
+rebuildStarfield();
+
+function saveLocalGame() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      money, scrap, score, killCount, weaponLevel, gear, inventory, baseEquipment,
+      skinColor: player.skinColor
+    }));
+  } catch(e){}
+}
+function loadLocalGame() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (!d) return;
+    money = d.money != null ? d.money : 20;
+    scrap = d.scrap != null ? d.scrap : 10;
+    score = d.score != null ? d.score : 0;
+    killCount = d.killCount != null ? d.killCount : 0;
+    weaponLevel = d.weaponLevel || weaponLevel;
+    gear = d.gear || gear;
+    inventory = d.inventory || [];
+    baseEquipment = d.baseEquipment || baseEquipment;
+    if (d.skinColor) player.skinColor = d.skinColor;
+    ["helmet","armor","boots","chip"].forEach(k => {
+      if (gear[k] && !gear[k].stats) gear[k].stats = {};
+    });
+    inventory = inventory.filter(it => it && it.type && it.rarity);
+    inventory.forEach(it => { if (!it.stats) it.stats = {}; });
+  } catch(e){}
+}
+loadLocalGame();
+setInterval(saveLocalGame, 3000);
+window.addEventListener("beforeunload", saveLocalGame);
+
+function showLogin() { $("login-screen").style.display = "flex"; loggedIn = false; }
+function hideLogin() { $("login-screen").style.display = "none"; loggedIn = true; }
+
+function updateLoginPreview() {
+  const pw = $("login-password").value;
+  const badge = $("login-role-badge"), info = $("login-role-info");
+  const role = getRoleFromPassword(pw);
+  if (role === null) {
+    badge.textContent = "❌ 密碼錯誤";
+    badge.style.cssText = "background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.4);";
+    info.innerHTML = '<span class="text-red-400">密碼錯誤，或清空密碼以訪客身份登入。</span>';
+    return;
+  }
+  const hex = ROLE_HEX[role];
+  let rgb = "103,232,249";
+  if (role === "Creator") rgb = "251,191,36";
+  else if (role === "Admin") rgb = "239,68,68";
+  else if (role === "Tester") rgb = "192,132,252";
+  badge.textContent = ROLE_LABELS[role] + (role === "Player" ? "" : " ★");
+  badge.style.cssText = "background:rgba("+rgb+",.15);color:"+hex+";border:1px solid rgba("+rgb+",.4);";
+  if (role === "Player") info.textContent = "以普通玩家身份進入戰場。";
+  else {
+    const inh = Object.keys(ROLE_LEVEL).filter(r => ROLE_LEVEL[r] <= ROLE_LEVEL[role] && r !== "Player").map(r => ROLE_LABELS[r]).join("、");
+    info.innerHTML = '將以 <span style="color:'+hex+';font-weight:700;">'+ROLE_LABELS[role]+'</span> 進入，繼承：<span style="color:'+hex+';">'+inh+'</span>';
+  }
+}
+
+function doLogin() {
+  const name = $("login-name").value.trim() || ("戰術員_" + Math.random().toString(36).slice(2, 6));
+  const pw = $("login-password").value;
+  const role = getRoleFromPassword(pw);
+  if (role === null) {
+    $("login-status").className = "mb-3 text-xs h-5 text-center font-bold text-red-400";
+    $("login-status").textContent = "❌ 密碼錯誤";
+    playSynthSound("hit");
+    return;
+  }
+  player.name = name;
+  player.role = role;
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, role }));
+    localStorage.setItem("nexus_rpg_lastname", name);
+  } catch(e){}
+  hideLogin();
+  updateAccountBadge();
+  syncMyself();
+  saveLocalGame();
+  playSynthSound("pickup");
+  toast("✅ 歡迎，" + name + "【" + ROLE_LABELS[role] + "】", "ok");
+  const c = $("chat-messages");
+  const w = document.createElement("div");
+  w.className = "text-cyan-400 italic";
+  w.textContent = "[系統] " + name + " 已以「" + ROLE_LABELS[role] + "」身份進入頻道 #" + currentChannel;
+  c.appendChild(w);
+  c.scrollTop = c.scrollHeight;
+}
+function guestLogin() { $("login-password").value = ""; doLogin(); }
+function logout() {
+  const ov = document.getElementById("kicked-overlay");
+  if (ov) ov.remove();
+  try { sessionStorage.removeItem(SESSION_KEY); } catch(e){}
+  player.role = "Player";
+  syncMyself();
+  showLogin();
+  $("login-password").value = "";
+  $("login-password").focus();
+}
+function relogin() {
+  $("login-screen").style.display = "flex";
+  $("login-password").value = "";
+  $("login-password").focus();
+  loggedIn = false;
+}
+function updateAccountBadge() {
+  const label = $("account-label"), icon = $("account-icon");
+  if (label) label.textContent = ROLE_LABELS[player.role] || "訪客";
+  if (icon) {
+    let color = "text-cyan-400";
+    if (player.role === "Creator") color = "text-amber-400";
+    else if (player.role === "Admin") color = "text-red-400";
+    else if (player.role === "Tester") color = "text-purple-400";
+    icon.className = "fa-solid " + ROLE_ICONS[player.role] + " " + color;
+  }
+}
+
+// ★ 被踢出全屏遮罩（倒计时结束后自动以玩家身份重登）
+function showKickedScreen() {
+  if (document.getElementById("kicked-overlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "kicked-overlay";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 50%,rgba(60,0,0,.98) 0%,rgba(2,4,10,.99) 70%);display:flex;align-items:center;justify-content:center;padding:20px";
+  overlay.innerHTML = `
+    <div class="glass-panel w-full max-w-md rounded-2xl p-8 border-red-500/60 shadow-2xl text-center">
+      <div class="text-6xl mb-4" style="color:#ef4444;"><i class="fa-solid fa-ban"></i></div>
+      <h1 class="text-2xl font-black font-orbitron text-red-400 mb-2">已被踢出頻道</h1>
+      <p class="text-sm text-slate-300 mb-6">您已被管理員移出當前戰場，<span class="text-amber-300 font-bold">5 秒後自動以「玩家」身份重新進入</span>。</p>
+      <div class="text-xs text-slate-500" id="kicked-countdown">5</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  loggedIn = false;
+  shooting = false;
+  keys = {};
+
+  let cd = 5;
+  const cdEl = overlay.querySelector("#kicked-countdown");
+  const timer = setInterval(() => {
+    cd--;
+    if (cdEl) cdEl.textContent = cd;
+    if (cd <= 0) {
+      clearInterval(timer);
+      try {
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name: player.name, role: "Player" }));
+      } catch(e){}
+      player.role = "Player";
+      location.reload();
+    }
+  }, 1000);
+}
+
+$("login-password").addEventListener("input", updateLoginPreview);
+$("login-password").addEventListener("keydown", e => { if (e.code === "Enter") { e.preventDefault(); doLogin(); } });
+$("login-name").addEventListener("keydown", e => { if (e.code === "Enter") { e.preventDefault(); $("login-password").focus(); } });
+$("btn-login").addEventListener("click", doLogin);
+$("btn-login-guest").addEventListener("click", guestLogin);
+$("btn-relogin").addEventListener("click", relogin);
+$("btn-logout").addEventListener("click", () => { if (confirm("確定登出？")) logout(); });
+$("btn-account").addEventListener("click", () => { if (!adminOpen) toggleAdmin(); });
+
+(function initLogin(){
+  try {
+    const sess = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+    if (sess && sess.role && ROLE_LEVEL[sess.role] !== undefined) {
+      player.name = sess.name || player.name;
+      player.role = sess.role;
+      hideLogin();
+      updateAccountBadge();
+      return;
+    }
+  } catch(e){}
+  try { const last = localStorage.getItem("nexus_rpg_lastname"); if (last) $("login-name").value = last; } catch(e){}
+  showLogin();
+  setTimeout(() => $("login-name").focus(), 100);
+})();
+updateLoginPreview();
+updateAccountBadge();
+
+const channelSelect = $("channel-select");
+for (let i = 1; i <= 100; i++) {
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = i;
+  channelSelect.appendChild(opt);
+}
+channelSelect.value = "1";
+channelSelect.addEventListener("change", e => {
+  currentChannel = parseInt(e.target.value, 10);
+  $("chat-channel-num").textContent = currentChannel;
+  switchChannel(currentChannel);
+});
+
+function roomPath() { return "nexus_room_" + currentChannel; }
+function sliceRandom(slice, salt) {
+  const x = Math.sin(slice * 12.9898 + salt * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+function switchChannel(ch) {
+  if (!firebaseReady) { setTimeout(() => switchChannel(ch), 800); return; }
+  [unsubPlayers, unsubChat, unsubDead, unsubBoss, unsubSlow].forEach(u => { if (u) u(); });
+  unsubPlayers = unsubChat = unsubDead = unsubBoss = unsubSlow = null;
+  if (currentOnDisconnect) { try { currentOnDisconnect.cancel(); } catch(e){} currentOnDisconnect = null; }
+  try { fbMod.remove(fbMod.ref(db, roomPath() + "/players/" + localPlayerId)); } catch(e){}
+
+  remotePlayers = {}; bullets = []; enemies = []; drops = []; particles = []; damageNumbers = [];
+  boss = null; spawnedSlices = new Set(); killList = new Set(); seenChatKeys.clear();
+  roomTopScore = 0; everJoined = false;
+  kickedFlag = false;
+  joinedAt = Date.now();
+  slowPoints = 0;
+  player.health = player.maxHealth; player.x = 430; player.y = 780;
+
+  $("chat-messages").innerHTML = '<div class="text-slate-400 italic">[系統] 歡迎來到戰場！T 或 Enter 輸入訊息。</div>';
+  $("online-count").innerHTML = '<i class="fa-solid fa-user"></i> 1';
+
+  currentChannel = ch;
+  $("chat-channel-num").textContent = ch;
+  const rp = roomPath();
+
+  currentOnDisconnect = fbMod.onDisconnect(fbMod.ref(db, rp + "/players/" + localPlayerId));
+  currentOnDisconnect.remove();
+
+  syncMyself();
+
+  unsubPlayers = fbMod.onValue(fbMod.ref(db, rp + "/players"), snap => {
+    const data = snap.val() || {};
+    const meInRoom = !!data[localPlayerId];
+
+    if (!meInRoom && Date.now() - joinedAt > 3000) {
+      if (!kickedFlag) {
+        kickedFlag = true;
+        console.log("[Kick] 偵測到被踢出，強制登出");
+        try { if (unsubPlayers) unsubPlayers(); } catch(e){}
+        try { if (unsubChat) unsubChat(); } catch(e){}
+        try { if (unsubDead) unsubDead(); } catch(e){}
+        try { if (unsubBoss) unsubBoss(); } catch(e){}
+        try { if (unsubSlow) unsubSlow(); } catch(e){}
+        unsubPlayers = unsubChat = unsubDead = unsubBoss = unsubSlow = null;
+        if (currentOnDisconnect) { try { currentOnDisconnect.cancel(); } catch(e){} currentOnDisconnect = null; }
+        remotePlayers = {};
+        bullets = []; enemies = []; drops = []; particles = []; damageNumbers = [];
+        boss = null;
+        showKickedScreen();
+      }
+      return;
+    }
+
+    if (meInRoom) everJoined = true;
+    else return;
+
+    remotePlayers = {};
+    let topScore = 0;
+    const now = Date.now();
+    for (const id in data) {
+      const p = data[id];
+      if (id !== localPlayerId && p.updatedAt && now - p.updatedAt > 300000) {
+        fbMod.remove(fbMod.ref(db, rp + "/players/" + id));
+        continue;
+      }
+      if (id !== localPlayerId) {
+        const rp2 = remotePlayers[id];
+        if (!rp2) remotePlayers[id] = Object.assign({}, p, { targetX: p.x, targetY: p.y, x: p.x, y: p.y });
+        else {
+          rp2.targetX = p.x; rp2.targetY = p.y;
+          rp2.health = p.health; rp2.weapon = p.weapon; rp2.score = p.score;
+          rp2.role = p.role; rp2.skinColor = p.skinColor; rp2.name = p.name;
         }
+      }
+      if ((p.score || 0) > topScore) topScore = p.score || 0;
+    }
+    roomTopScore = topScore;
+    $("online-count").innerHTML = '<i class="fa-solid fa-user"></i> ' + Object.keys(remotePlayers).length;
+  });
+
+  unsubChat = fbMod.onChildAdded(fbMod.query(fbMod.ref(db, rp + "/chats"), fbMod.limitToLast(50)), snap => {
+    const key = snap.key;
+    if (seenChatKeys.has(key)) return;
+    seenChatKeys.add(key);
+    const c = snap.val();
+    if (!c) return;
+    const container = $("chat-messages");
+    const el = document.createElement("div");
+    const roleColor = ROLE_COLORS[c.role] || "text-cyan-400";
+    const n = document.createElement("span");
+    n.className = "font-bold " + roleColor;
+    n.textContent = "[" + (ROLE_LABELS[c.role] || "玩家") + "] " + c.sender + ":";
+    const t = document.createElement("span");
+    t.className = "text-slate-200";
+    t.textContent = " " + c.text;
+    el.appendChild(n); el.appendChild(t);
+    container.appendChild(el);
+    container.scrollTop = container.scrollHeight;
+    while (container.childNodes.length > 200) container.removeChild(container.firstChild);
+  });
+
+  unsubDead = fbMod.onValue(fbMod.ref(db, rp + "/deadEnemies"), snap => {
+    const data = snap.exists() ? snap.val() : {};
+    const now = Date.now();
+    for (const id in data) {
+      const ts = data[id];
+      if (typeof ts === "number" && now - ts > 3600000) { fbMod.remove(fbMod.ref(db, rp + "/deadEnemies/" + id)); continue; }
+      if (!killList.has(id)) {
+        killList.add(id);
+        enemies = enemies.filter(e => e.id !== id);
+        if (boss && boss.id === id) boss = null;
+      }
+    }
+  });
+
+  unsubBoss = fbMod.onValue(fbMod.ref(db, rp + "/boss"), snap => {
+    const b = snap.val();
+    if (!b || b.hp <= 0) { boss = null; return; }
+    if (!boss || boss.id !== b.id) {
+      boss = { id: b.id, x: b.x, y: b.y, width: 100, height: 100, health: b.hp, maxHealth: b.maxHp, attackTimer: 0, isRemote: b.owner !== localPlayerId };
+    } else {
+      boss.health = b.hp; boss.maxHealth = b.maxHp;
+      if (boss.isRemote) { boss.x = b.x; boss.y = b.y; }
+    }
+  });
+
+  // ★ 監聽自己的「降速點數」（-5 表示扣 5 點移速）
+  unsubSlow = fbMod.onValue(fbMod.ref(db, rp + "/slowPoints/" + localPlayerId), snap => {
+    const v = snap.val();
+    slowPoints = (typeof v === "number") ? v : 0;
+    if (slowPoints < 0) toast("🐌 您被降速了！移速 " + slowPoints, "warn", 2000);
+    else if (slowPoints > 0) toast("⚡ 您被加速了！移速 +" + slowPoints, "ok", 2000);
+  });
+}
+
+function syncMyself() {
+  if (!firebaseReady) return;
+  fbMod.set(fbMod.ref(db, roomPath() + "/players/" + localPlayerId), {
+    x: Math.round(player.x), y: Math.round(player.y),
+    health: player.health, weapon, score,
+    role: player.role, skinColor: player.skinColor, name: player.name,
+    updatedAt: Date.now()
+  }).catch(() => {});
+}
+
+function trySpawnBoss(level) {
+  if (!firebaseReady) return;
+  const id = "BOSS_" + level;
+  if (killList.has(id)) return;
+  fbMod.runTransaction(fbMod.ref(db, roomPath() + "/boss"), cur => {
+    if (cur) return;
+    return { id, level, x: Math.round(canvas.width / 2 - 50), y: 80, hp: 800 + level * 200, maxHp: 800 + level * 200, owner: localPlayerId, bornAt: Date.now() };
+  }).catch(() => {});
+}
+
+function tryKillEnemy(enemyId, scoreAmount, dropData) {
+  if (killList.has(enemyId)) return;
+  killList.add(enemyId);
+  score += scoreAmount;
+  if (dropData) {
+    drops.push({ id: "L_" + Date.now() + "_" + Math.floor(Math.random() * 100000), x: dropData.x, y: dropData.y, item: dropData.item, bornAt: Date.now() });
+  }
+  if (!firebaseReady) return;
+  fbMod.set(fbMod.ref(db, roomPath() + "/deadEnemies/" + enemyId), Date.now()).catch(() => {});
+}
+
+function fireBullet(bData) {
+  if (effects.onekill) bData.damage = 999999;
+  if (bullets.length >= MAX_BULLETS) bullets.shift();
+  bData.id = "L_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+  bullets.push(bData);
+}
+
+$("btn-sound-toggle").addEventListener("click", () => {
+  soundEnabled = !soundEnabled;
+  $("sound-status").textContent = soundEnabled ? "開啟" : "靜音";
+  $("sound-icon").className = soundEnabled ? "fa-solid fa-volume-high text-cyan-400" : "fa-solid fa-volume-xmark text-slate-500";
+});
+
+const modalSettings = $("modal-settings");
+function toggleSettings() {
+  settingsOpen = !settingsOpen;
+  modalSettings.classList.toggle("hidden", !settingsOpen);
+  if (settingsOpen) { closeAllModals("set"); renderSettingsUI(); }
+}
+$("btn-settings").addEventListener("click", toggleSettings);
+$("close-settings").addEventListener("click", toggleSettings);
+
+function renderSettingsUI() {
+  $("set-volume").value = settings.masterVolume;
+  $("set-volume-val").textContent = settings.masterVolume;
+  $("set-particles").value = settings.particleQuality;
+  $("set-stars").value = settings.starfieldDensity;
+  $("set-stars-val").textContent = settings.starfieldDensity;
+  $("set-crosshair").value = settings.crosshair;
+  const map = { "toggle-fps":"showFPS", "toggle-names":"showNames", "toggle-shake":"screenShake", "toggle-dmg":"showDamageNumbers", "toggle-autoaim":"autoAim" };
+  Object.keys(map).forEach(id => {
+    const key = map[id];
+    const el = $(id);
+    el.classList.toggle("on", settings[key]);
+    el.onclick = () => { settings[key] = !settings[key]; el.classList.toggle("on", settings[key]); saveSettings(); };
+  });
+}
+$("set-volume").addEventListener("input", e => { settings.masterVolume = +e.target.value; $("set-volume-val").textContent = settings.masterVolume; saveSettings(); });
+$("set-particles").addEventListener("change", e => { settings.particleQuality = e.target.value; saveSettings(); });
+$("set-stars").addEventListener("input", e => { settings.starfieldDensity = +e.target.value; $("set-stars-val").textContent = settings.starfieldDensity; rebuildStarfield(); saveSettings(); });
+$("set-crosshair").addEventListener("change", e => { settings.crosshair = e.target.value; saveSettings(); });
+$("btn-reset-settings").addEventListener("click", () => {
+  if (!confirm("恢復預設？")) return;
+  settings = Object.assign({}, DEFAULT_SETTINGS);
+  saveSettings(); rebuildStarfield(); renderSettingsUI();
+});
+
+function isTypingInInput() {
+  const a = document.activeElement;
+  return a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.tagName === "SELECT");
+}
+document.addEventListener("keydown", e => {
+  if (!loggedIn) return;
+  if (document.activeElement === $("chat-input")) {
+    if (e.code === "Escape") $("chat-input").blur();
+    if (e.code === "Enter") { e.preventDefault(); $("chat-form").requestSubmit(); }
+    return;
+  }
+  if (isTypingInInput()) { if (e.code === "Escape") document.activeElement.blur(); return; }
+  keys[e.code] = true;
+  if (e.code === "KeyB") toggleShop();
+  if (e.code === "KeyI") toggleInventory();
+  if (e.code === "KeyK") toggleAdmin();
+  if (e.code === "KeyO") toggleSettings();
+  if (e.code === "KeyT") { e.preventDefault(); $("chat-input").focus(); }
+  if (e.code === "Escape") relogin();
+  if (!shopOpen && !inventoryOpen && !adminOpen && !settingsOpen) {
+    if (e.code === "Digit1") weapon = "pistol";
+    if (e.code === "Digit2") weapon = "shotgun";
+    if (e.code === "Digit3") weapon = "machinegun";
+    if (e.code === "Digit4") weapon = "laser";
+    if (e.code === "Digit5") weapon = "rocket";
+    if (e.code === "Digit6") weapon = "railgun";
+  }
+  if (e.code === "KeyR" && inventoryOpen) craftItem();
+});
+document.addEventListener("keyup", e => { keys[e.code] = false; });
+
+function getMousePos(evt) {
+  const rect = canvas.getBoundingClientRect();
+  return { x: (evt.clientX - rect.left) * (canvas.width / rect.width), y: (evt.clientY - rect.top) * (canvas.height / rect.height) };
+}
+canvas.addEventListener("mousemove", e => { const p = getMousePos(e); mouse.x = p.x; mouse.y = p.y; });
+canvas.addEventListener("mousedown", e => {
+  if (!loggedIn) return;
+  ensureAudio();
+  if (e.button === 0 && !shopOpen && !inventoryOpen && !adminOpen && !settingsOpen) shooting = true;
+});
+canvas.addEventListener("mouseup", e => { if (e.button === 0) shooting = false; });
+window.addEventListener("blur", () => { shooting = false; keys = {}; });
+
+$("chat-form").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!loggedIn) return;
+  const input = $("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  if (!firebaseReady) return;
+  fbMod.push(fbMod.ref(db, roomPath() + "/chats"), { sender: player.name, role: player.role, text, timestamp: Date.now() }).catch(() => {});
+});
+
+function canShoot(rate) {
+  const now = Date.now();
+  const actualRate = effects.quickfire > 0 ? rate / 5 : rate;
+  if (now - lastShot > actualRate) { lastShot = now; return true; }
+  return false;
+}
+function findAutoAimTarget(cx, cy, dirX, dirY) {
+  let best = null, bestAngle = .45;
+  const all = boss ? enemies.concat([boss]) : enemies;
+  for (let i = 0; i < all.length; i++) {
+    const e = all[i];
+    const ex = e.x + e.width / 2, ey = e.y + e.height / 2;
+    const dx = ex - cx, dy = ey - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = dx / len, ny = dy / len;
+    const dot = nx * dirX + ny * dirY;
+    const angle = Math.acos(Math.max(-1, Math.min(1, dot)));
+    if (angle < bestAngle) { bestAngle = angle; best = { x: nx, y: ny }; }
+  }
+  return best;
+}
+function shoot() {
+  const cx = player.x + player.width / 2, cy = player.y + player.height / 2;
+  let dx = mouse.x - cx, dy = mouse.y - cy;
+  const len = Math.hypot(dx, dy) || 1;
+  let vx = dx / len, vy = dy / len;
+  if (settings.autoAim) { const t = findAutoAimTarget(cx, cy, vx, vy); if (t) { vx = t.x; vy = t.y; } }
+  const multi = equipment.doubleBullet ? 2 : 1;
+  const cfg = weaponConfig[weapon];
+  if (!canShoot(cfg.rate)) return;
+  playSynthSound("shoot_" + weapon);
+  triggerShake(weapon === "rocket" || weapon === "railgun" ? 5 : 2);
+
+  for (let m = 0; m < multi; m++) {
+    const offset = (m - (multi - 1) / 2) * 14;
+    if (weapon === "pistol") {
+      fireBullet({ x: cx + offset, y: cy, vx: vx * (11 + weaponLevel.pistol), vy: vy * (11 + weaponLevel.pistol), type: "pistol", damage: 18 + weaponLevel.pistol * 4, color: cfg.color, size: 4 });
+      createParticles(cx + offset + vx * 15, cy + vy * 15, "#00e5ff", 3);
+    } else if (weapon === "shotgun") {
+      for (let i = -2; i <= 2; i++) {
+        const s = i * .15;
+        fireBullet({ x: cx, y: cy, vx: (vx + s) * (8 + weaponLevel.shotgun), vy: (vy + s) * (8 + weaponLevel.shotgun), type: "shotgun", damage: 10 + weaponLevel.shotgun * 2, color: cfg.color, size: 4 });
+      }
+      createParticles(cx + vx * 15, cy + vy * 15, "#ffaa00", 6);
+    } else if (weapon === "machinegun") {
+      fireBullet({ x: cx + offset, y: cy, vx: (vx + (Math.random() - .5) * .1) * (14 + weaponLevel.machinegun), vy: (vy + (Math.random() - .5) * .1) * (14 + weaponLevel.machinegun), type: "machinegun", damage: 12 + weaponLevel.machinegun * 2, tracking: equipment.tracking, color: cfg.color, size: 3 });
+      createParticles(cx + offset + vx * 15, cy + vy * 15, "#ffff00", 2);
+    } else if (weapon === "laser") {
+      fireBullet({ x: cx + offset, y: cy, vx: vx * 18, vy: vy * 18, type: "laser", damage: 8 + weaponLevel.laser * 2, piercing: true, color: cfg.color, size: 5 });
+      createParticles(cx + offset + vx * 15, cy + vy * 15, "#ec4899", 4);
+    } else if (weapon === "rocket") {
+      fireBullet({ x: cx + offset, y: cy, vx: vx * 8, vy: vy * 8, type: "rocket", damage: 50 + weaponLevel.rocket * 15, splash: true, color: cfg.color, size: 8 });
+      createParticles(cx + offset, cy, "#ef4444", 5);
+    } else if (weapon === "railgun") {
+      fireBullet({ x: cx + offset, y: cy, vx: vx * 28, vy: vy * 28, type: "railgun", damage: 90 + weaponLevel.railgun * 25, color: cfg.color, size: 10, life: 5 });
+      createParticles(cx + offset, cy, "#a855f7", 12, 2);
+    }
+  }
+}
+function createParticles(x, y, color, count, speedMultiplier) {
+  count = count || 10; speedMultiplier = speedMultiplier || 1;
+  const q = settings.particleQuality;
+  const mult = q === "low" ? .3 : q === "medium" ? .7 : 1;
+  count = Math.max(1, Math.ceil(count * mult));
+  if (particles.length > MAX_PARTICLES) count = Math.min(count, 3);
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const sp = (Math.random() * 3.5 + 1) * speedMultiplier;
+    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: Math.random() * 20 + 10, maxLife: 30, color, size: Math.random() * 3.5 + 1.5 });
+  }
+}
+function addDamageNumber(x, y, amount, color) {
+  if (!settings.showDamageNumbers) return;
+  if (damageNumbers.length > 60) damageNumbers.shift();
+  damageNumbers.push({ x, y, amount: Math.round(amount), color, life: 40, maxLife: 40, vy: -1.5 });
+}
+
+function closeAllModals(except) {
+  if (except !== "shop") { shopOpen = false; $("modal-shop").classList.add("hidden"); }
+  if (except !== "inv") { inventoryOpen = false; $("modal-inventory").classList.add("hidden"); }
+  if (except !== "admin") { adminOpen = false; $("modal-admin").classList.add("hidden"); }
+  if (except !== "set") { settingsOpen = false; $("modal-settings").classList.add("hidden"); }
+}
+function toggleShop() {
+  shopOpen = !shopOpen;
+  $("modal-shop").classList.toggle("hidden", !shopOpen);
+  if (shopOpen) { closeAllModals("shop"); renderShopUI(); }
+}
+function toggleInventory() {
+  inventoryOpen = !inventoryOpen;
+  $("modal-inventory").classList.toggle("hidden", !inventoryOpen);
+  if (inventoryOpen) { closeAllModals("inv"); renderInventoryUI(); }
+}
+function toggleAdmin() {
+  adminOpen = !adminOpen;
+  $("modal-admin").classList.toggle("hidden", !adminOpen);
+  if (adminOpen) { closeAllModals("admin"); renderAdminUI(); }
+}
+$("close-shop").addEventListener("click", toggleShop);
+$("close-inventory").addEventListener("click", toggleInventory);
+$("close-admin").addEventListener("click", toggleAdmin);
+
+function renderShopUI() {
+  $("shop-money").textContent = money;
+  $("shop-scrap").textContent = scrap;
+  const items = [
+    { name:"急救包 (+30血)", cost:8, type:"money", act:()=>{ if(money>=8){money-=8;player.health=Math.min(player.health+30,player.maxHealth);playSynthSound("pickup");} } },
+    { name:"升級手槍 Lv."+(weaponLevel.pistol+1), cost:12, type:"money", act:()=>{ if(money>=12){money-=12;weaponLevel.pistol++;} } },
+    { name:"升級霰彈槍 Lv."+(weaponLevel.shotgun+1), cost:20, type:"money", act:()=>{ if(money>=20){money-=20;weaponLevel.shotgun++;} } },
+    { name:"升級機關槍 Lv."+(weaponLevel.machinegun+1), cost:30, type:"money", act:()=>{ if(money>=30){money-=30;weaponLevel.machinegun++;} } },
+    { name:"升級雷射槍 Lv."+(weaponLevel.laser+1), cost:40, type:"money", act:()=>{ if(money>=40){money-=40;weaponLevel.laser++;} } },
+    { name:"升級火箭炮 Lv."+(weaponLevel.rocket+1), cost:50, type:"money", act:()=>{ if(money>=50){money-=50;weaponLevel.rocket++;} } },
+    { name:"升級電磁砲 Lv."+(weaponLevel.railgun+1), cost:65, type:"money", act:()=>{ if(money>=65){money-=65;weaponLevel.railgun++;} } },
+    { name:"基礎裝甲 (+1)", cost:15, type:"scrap", act:()=>{ if(scrap>=15){scrap-=15;baseEquipment.armor++;applyStats();} } },
+    { name:"戰術靴 (+0.8速)", cost:20, type:"scrap", act:()=>{ if(scrap>=20){scrap-=20;baseEquipment.speed+=.8;applyStats();} } },
+    { name:"雙發晶片", cost:35, type:"scrap", act:()=>{ if(scrap>=35){scrap-=35;baseEquipment.doubleBullet=true;applyStats();} } },
+    { name:"追蹤晶片", cost:50, type:"scrap", act:()=>{ if(scrap>=50){scrap-=50;baseEquipment.tracking=true;applyStats();} } }
+  ];
+  const c = $("shop-items-container");
+  c.innerHTML = "";
+  items.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "bg-slate-900/80 p-3 rounded-lg border border-slate-700 flex justify-between items-center hover:border-cyan-500/60";
+    const icon = item.type === "money" ? '<i class="fa-solid fa-coins text-amber-400"></i>' : '<i class="fa-solid fa-wrench text-cyan-400"></i>';
+    card.innerHTML = '<div><div class="text-xs font-bold text-slate-100">'+item.name+'</div><div class="text-[11px] text-slate-400">價格: '+icon+' '+item.cost+'</div></div><button class="buy-btn bg-cyan-600/80 hover:bg-cyan-500 text-white text-xs font-bold px-3 py-1.5 rounded">購買</button>';
+    card.querySelector(".buy-btn").addEventListener("click", () => { item.act(); renderShopUI(); saveLocalGame(); });
+    c.appendChild(card);
+  });
+}
+
+function applyStats() {
+  try {
+    equipment = Object.assign({}, baseEquipment);
+    for (const k in gear) {
+      const g = gear[k];
+      if (!g || !g.stats) continue;
+      if (g.stats.armor) equipment.armor += g.stats.armor;
+      if (g.stats.speed) equipment.speed += g.stats.speed;
+      if (g.stats.doubleBullet) equipment.doubleBullet = true;
+      if (g.stats.tracking) equipment.tracking = true;
+    }
+  } catch(e) { equipment = Object.assign({}, baseEquipment); }
+}
+applyStats();
+
+function describeStats(item) {
+  if (!item || !item.stats) return "";
+  const p = [];
+  if (item.stats.armor) p.push("護甲+" + item.stats.armor);
+  if (item.stats.speed) p.push("速度+" + Number(item.stats.speed).toFixed(1));
+  if (item.stats.doubleBullet) p.push("雙發");
+  if (item.stats.tracking) p.push("追蹤");
+  return p.join(" · ") || "無屬性";
+}
+function equipItemByIndex(index) {
+  const item = inventory[index];
+  if (!item || !item.type) return;
+  const slot = item.type;
+  if (["helmet","armor","boots","chip"].indexOf(slot) < 0) return;
+  inventory.splice(index, 1);
+  if (gear[slot]) inventory.push(gear[slot]);
+  if (!item.stats) item.stats = {};
+  gear[slot] = item;
+  applyStats(); playSynthSound("pickup"); saveLocalGame(); renderInventoryUI();
+}
+function unequipItem(slot) {
+  const g = gear[slot];
+  if (!g) return;
+  if (inventory.length >= MAX_INVENTORY) { toast("背包已滿", "warn"); return; }
+  inventory.push(g);
+  gear[slot] = null;
+  applyStats(); saveLocalGame(); renderInventoryUI();
+}
+function scrapItem(index) {
+  if (index < 0 || index >= inventory.length) return;
+  const item = inventory[index];
+  scrap += item.rarity === "legendary" ? 25 : item.rarity === "epic" ? 15 : item.rarity === "rare" ? 10 : 5;
+  inventory.splice(index, 1);
+  playSynthSound("pickup"); saveLocalGame(); renderInventoryUI();
+}
+function createItem(type) {
+  const r = Math.random();
+  const rarity = r < .6 ? "common" : r < .9 ? "rare" : r < .98 ? "epic" : "legendary";
+  const mult = rarityMap[rarity].multi;
+  const stats = {};
+  if (type === "armor" || type === "helmet") stats.armor = mult;
+  if (type === "boots") stats.speed = mult * .8;
+  if (type === "chip") { stats.doubleBullet = true; stats.tracking = true; }
+  return { type, rarity, stats };
+}
+function makeLegendaryItem(type) {
+  const stats = {};
+  if (type === "armor" || type === "helmet") stats.armor = 5;
+  if (type === "boots") stats.speed = 4;
+  if (type === "chip") { stats.doubleBullet = true; stats.tracking = true; }
+  return { type, rarity: "legendary", stats };
+}
+function createLegendaryItem() {
+  const types = ["helmet","armor","boots","chip"];
+  return makeLegendaryItem(types[Math.floor(Math.random() * types.length)]);
+}
+function craftItem() {
+  if (scrap < 30) { toast("零件不足(需30)", "warn"); return; }
+  if (inventory.length >= MAX_INVENTORY) { toast("背包已滿", "warn"); return; }
+  scrap -= 30;
+  const types = ["helmet","armor","boots","chip"];
+  inventory.push(createItem(types[Math.floor(Math.random() * types.length)]));
+  playSynthSound("pickup"); saveLocalGame(); renderInventoryUI();
+}
+$("btn-craft").addEventListener("click", craftItem);
+
+function renderInventoryUI() {
+  $("inv-count").textContent = inventory.length;
+  $("inv-scrap").textContent = scrap;
+  const slotsDiv = $("equipped-slots");
+  slotsDiv.innerHTML = "";
+  const slotLabels = { helmet:"頭盔", armor:"護甲", boots:"戰術靴", chip:"晶片" };
+  for (const k in slotLabels) {
+    const g = gear[k];
+    const box = document.createElement("div");
+    box.className = "bg-slate-950 p-2 rounded border border-slate-800 flex justify-between items-center";
+    if (g) {
+      const ri = rarityMap[g.rarity] || rarityMap.common;
+      box.innerHTML = '<div class="flex-1 min-w-0"><div class="text-[11px] text-slate-400">'+slotLabels[k]+'</div><div class="font-bold text-xs truncate" style="color:'+ri.color+'">['+ri.name+']</div><div class="text-[10px] text-slate-500 truncate">'+describeStats(g)+'</div></div><button class="un-btn text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 ml-1">卸下</button>';
+      (function(slot){ box.querySelector(".un-btn").addEventListener("click", () => unequipItem(slot)); })(k);
+    } else {
+      box.innerHTML = '<div class="flex-1"><div class="text-[11px] text-slate-500">'+slotLabels[k]+'</div><div class="text-xs text-slate-600 italic">未裝備</div></div>';
+    }
+    slotsDiv.appendChild(box);
+  }
+  const bp = $("backpack-list");
+  bp.innerHTML = "";
+  if (inventory.length === 0) {
+    bp.innerHTML = '<div class="col-span-2 text-slate-500 italic text-xs text-center py-6">背包空空如也</div>';
+  }
+  inventory.forEach((item, idx) => {
+    if (!item || !item.type) return;
+    const ri = rarityMap[item.rarity] || rarityMap.common;
+    const typeZh = item.type === "helmet" ? "頭盔" : item.type === "armor" ? "護甲" : item.type === "boots" ? "戰術靴" : "晶片";
+    const card = document.createElement("div");
+    card.className = "bg-slate-950 p-2 rounded border border-slate-800 flex justify-between items-center gap-1";
+    card.innerHTML = '<div class="flex-1 min-w-0"><div class="font-bold text-xs truncate" style="color:'+ri.color+'">['+ri.name+'] '+typeZh+'</div><div class="text-[10px] text-slate-500 truncate">'+describeStats(item)+'</div></div><div class="flex gap-1"><button class="eq-btn bg-cyan-900/60 hover:bg-cyan-800 text-cyan-300 text-[10px] px-1.5 py-0.5 rounded">裝備</button><button class="scrap-btn bg-red-900/40 hover:bg-red-800 text-red-300 text-[10px] px-1.5 py-0.5 rounded">拆解</button></div>';
+    (function(i){
+      card.querySelector(".eq-btn").addEventListener("click", () => equipItemByIndex(i));
+      card.querySelector(".scrap-btn").addEventListener("click", () => scrapItem(i));
+    })(idx);
+    bp.appendChild(card);
+  });
+}
+
+function refreshRoleDisplay() {
+  const el = $("admin-current-role");
+  if (el) {
+    el.textContent = (ROLE_LABELS[player.role] || "玩家") + " (" + player.role + ")";
+    el.className = "text-sm font-bold font-orbitron " + (ROLE_COLORS[player.role] || "text-cyan-400");
+  }
+  $("section-tester").classList.toggle("hidden", !hasRole("Tester"));
+  $("section-admin").classList.toggle("hidden", !hasRole("Admin"));
+  $("section-creator").classList.toggle("hidden", !hasRole("Creator"));
+  document.querySelectorAll("[data-role]").forEach(btn => {
+    btn.disabled = !hasRole(btn.getAttribute("data-role"));
+  });
+}
+function renderAdminUI() {
+  $("skin-color-picker").value = player.skinColor;
+  $("skin-color-picker").onchange = e => { player.skinColor = e.target.value; syncMyself(); };
+  refreshRoleDisplay();
+  const pList = $("admin-player-list");
+  pList.innerHTML = "";
+  const canKick = hasRole("Admin");
+  const canSlow = hasRole("Admin");
+  Object.keys(remotePlayers).forEach(id => {
+    const rp = remotePlayers[id];
+    const row = document.createElement("div");
+    row.className = "flex justify-between items-center bg-slate-900 p-1.5 rounded border border-slate-800";
+    const roleColor = ROLE_COLORS[rp.role] || "text-cyan-400";
+    row.innerHTML = '<span class="text-slate-200">'+(rp.name||id)+' <span class="'+roleColor+' text-[10px]">('+(ROLE_LABELS[rp.role]||"Player")+')</span></span><div class="flex gap-1"><button class="slow-btn bg-amber-600 hover:bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded'+(canSlow?'':' opacity-40')+'">🐌 -5</button><button class="fast-btn bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded'+(canSlow?'':' opacity-40')+'">⚡ +5</button><button class="kick-btn bg-red-600 hover:bg-red-500 text-white text-[10px] px-2 py-0.5 rounded'+(canKick?'':' opacity-40')+'">踢出</button></div>';
+    const sb = row.querySelector(".slow-btn");
+    const fb = row.querySelector(".fast-btn");
+    const kb = row.querySelector(".kick-btn");
+    sb.disabled = !canSlow;
+    fb.disabled = !canSlow;
+    kb.disabled = !canKick;
+    // ★ 降速 -5：用 transaction 累加
+    sb.addEventListener("click", () => {
+      if (!canSlow) return;
+      if (firebaseReady) {
+        fbMod.runTransaction(fbMod.ref(db, roomPath() + "/slowPoints/" + id), cur => {
+          const v = (typeof cur === "number") ? cur : 0;
+          return v - 5;
+        }).catch(() => {});
+      }
+      toast("🐌 已對 " + (rp.name || id) + " 降速 -5", "ok");
+    });
+    // ★ 加速 +5：用 transaction 累加
+    fb.addEventListener("click", () => {
+      if (!canSlow) return;
+      if (firebaseReady) {
+        fbMod.runTransaction(fbMod.ref(db, roomPath() + "/slowPoints/" + id), cur => {
+          const v = (typeof cur === "number") ? cur : 0;
+          return v + 5;
+        }).catch(() => {});
+      }
+      toast("⚡ 已對 " + (rp.name || id) + " 加速 +5", "ok");
+    });
+    kb.addEventListener("click", () => {
+      if (!canKick) return;
+      if (!confirm("確定踢出 " + (rp.name || id) + "？")) return;
+      if (firebaseReady) fbMod.remove(fbMod.ref(db, roomPath() + "/players/" + id));
+    });
+    pList.appendChild(row);
+  });
+  if (Object.keys(remotePlayers).length === 0) {
+    pList.innerHTML = '<div class="text-slate-500 italic text-[11px]">當前頻道無其他玩家</div>';
+  }
+}
+
+$("btn-elevate").addEventListener("click", () => {
+  const input = $("admin-password");
+  const pw = input.value;
+  if (!pw) { toast("請輸入密碼", "warn"); return; }
+  const targetRole = getRoleFromPassword(pw);
+  if (!targetRole) { playSynthSound("hit"); toast("❌ 密碼錯誤", "err"); return; }
+  player.role = targetRole;
+  input.value = "";
+  playSynthSound("pickup");
+  syncMyself(); refreshRoleDisplay(); renderAdminUI(); updateAccountBadge();
+  try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name: player.name, role: player.role })); } catch(e){}
+  toast("✅ 已提升為【" + ROLE_LABELS[targetRole] + "】", "ok");
+});
+$("btn-demote").addEventListener("click", () => {
+  if (player.role === "Player") { toast("目前已是玩家", "info"); return; }
+  if (!confirm("確定降為玩家？")) return;
+  player.role = "Player";
+  try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name: player.name, role: "Player" })); } catch(e){}
+  syncMyself(); refreshRoleDisplay(); renderAdminUI(); updateAccountBadge();
+});
+
+const cheatActions = {
+  money_small:()=>{money+=100;playSynthSound("pickup");saveLocalGame();toast("💰 已加 $100","ok");},
+  scrap_small:()=>{scrap+=50;playSynthSound("pickup");saveLocalGame();toast("🔧 已加 50 零件","ok");},
+  heal_small:()=>{player.health=player.maxHealth;playSynthSound("pickup");},
+  shield:()=>{player.invincible=60*10;playSynthSound("pickup");toast("🛡 護盾 10 秒","ok");},
+  quickfire:()=>{effects.quickfire=60*10;playSynthSound("pickup");toast("⚡ 無限射速 10 秒","ok");},
+  slowmo:()=>{effects.slowmo=60*5;playSynthSound("pickup");toast("🐢 敵人減速 5 秒","ok");},
+  money:()=>{money+=500;playSynthSound("pickup");saveLocalGame();toast("💰 已加 $500","ok");},
+  scrap:()=>{scrap+=200;playSynthSound("pickup");saveLocalGame();toast("🔧 已加 200 零件","ok");},
+  upgrade:()=>{for(const k in weaponLevel)weaponLevel[k]+=5;playSynthSound("pickup");saveLocalGame();toast("⬆ 全武器 +5 級","ok");},
+  heal:()=>{player.health=player.maxHealth;player.invincible=Math.max(player.invincible,60);playSynthSound("pickup");},
+  invincible:()=>{player.invincible=60*30;playSynthSound("pickup");toast("🛡 無敵 30 秒","ok");},
+  speed:()=>{baseEquipment.speed+=5;applyStats();playSynthSound("pickup");toast("⚡ 移速 +5","ok");},
+  freeze:()=>{effects.freeze=60*5;playSynthSound("pickup");toast("❄️ 凍結 5 秒","ok");},
+  magnet:()=>{effects.magnet=!effects.magnet;playSynthSound("pickup");toast(effects.magnet?"🧲 磁鐵開啟":"🧲 磁鐵關閉","ok");},
+  teleport:()=>{player.x=Math.max(0,Math.min(canvas.width-player.width,mouse.x));player.y=Math.max(0,Math.min(canvas.height-player.height,mouse.y));createParticles(player.x+20,player.y+20,"#a855f7",20,2);playSynthSound("pickup");syncMyself();toast("🌀 傳送完成","ok");},
+  unlock_weapons:()=>{for(const k in weaponLevel)weaponLevel[k]=10;playSynthSound("pickup");saveLocalGame();toast("🔓 全武器 Lv.10","ok");},
+  double_money:()=>{effects.doubleMoney=!effects.doubleMoney;toast(effects.doubleMoney?"💸 金幣 x2 開啟":"💸 金幣 x2 關閉","ok");},
+  killall:()=>{
+    const count=enemies.length;
+    enemies.forEach(e=>{createParticles(e.x+e.width/2,e.y+e.height/2,"#ef4444",12);const drop=spawnDrop(e.x,e.y);tryKillEnemy(e.id,1,drop);killCount++;money+=effects.doubleMoney?2:1;if(killCount%3===0)scrap+=1;});
+    enemies=[];playSynthSound("explosion");triggerShake(12);saveLocalGame();toast("💥 秒殺 "+count+" 隻","ok");
+  },
+  legendary:()=>{const types=["helmet","armor","boots","chip"];let added=0;types.forEach(t=>{if(inventory.length<MAX_INVENTORY){inventory.push(makeLegendaryItem(t));added++;}});playSynthSound("pickup");saveLocalGame();toast("⭐ 發放 "+added+" 件傳說","ok");},
+  spawnboss:()=>{if(boss){toast("已有 BOSS","warn");return;}const level=Math.max(1,Math.floor(roomTopScore/40)+1);trySpawnBoss(level);playSynthSound("explosion");},
+  superboss:()=>{if(boss){toast("已有 BOSS","warn");return;}trySpawnBoss(10);playSynthSound("explosion");toast("🐲 超級 BOSS 降臨","warn");},
+  nuke:()=>{
+    const eCount=enemies.length;
+    enemies.forEach(e=>{createParticles(e.x+e.width/2,e.y+e.height/2,"#ef4444",20,2);const drop=spawnDrop(e.x,e.y);tryKillEnemy(e.id,1,drop);});
+    enemies=[];
+    if(boss&&firebaseReady){
+      const rp=roomPath();
+      fbMod.runTransaction(fbMod.ref(db,rp+"/boss"),cur=>{if(!cur)return;cur.hp=0;return cur;}).then(()=>{
+        tryKillEnemy(boss.id,40,spawnBossDrop(boss.x+40,boss.y+40));
+        fbMod.remove(fbMod.ref(db,rp+"/boss"));boss=null;
+      }).catch(()=>{});
+    }
+    playSynthSound("explosion");triggerShake(25);
+    for(let i=0;i<20;i++)createParticles(canvas.width/2,canvas.height/2,"#ffffff",15,3);
+    saveLocalGame();toast("☢️ 核彈：擊殺 "+eCount+" 隻","ok");
+  },
+  addscore:()=>{score+=1000;syncMyself();playSynthSound("pickup");toast("🏆 +1000 分","ok");},
+  clearscore:()=>{if(!confirm("歸零分數？"))return;score=0;syncMyself();},
+  timestop:()=>{effects.timestop=60*3;playSynthSound("pickup");toast("⏱ 時間暫停 3 秒","ok");},
+  infinitehealth:()=>{effects.infiniteHealth=!effects.infiniteHealth;toast(effects.infiniteHealth?"∞ 無限血量開啟":"∞ 無限血量關閉","ok");},
+  spawnall:()=>{
+    for(let i=0;i<30;i++){
+      if(enemies.length>=60)break;
+      const slice=Math.floor(Date.now()/ENEMY_SLICE_MS)+i*7919;
+      const e=makeEnemyFromSlice(slice);
+      e.id="E_swarm_"+Date.now()+"_"+i;
+      e.x=Math.random()*(canvas.width-e.width);
+      e.y=-40-Math.random()*200;
+      enemies.push(e);
+    }
+    playSynthSound("explosion");triggerShake(15);toast("🌊 怪物狂潮","warn");
+  },
+  invisible:()=>{effects.invisible=!effects.invisible;toast(effects.invisible?"👻 隱身開啟":"👻 隱身關閉","ok");},
+  rainbow:()=>{effects.rainbow=!effects.rainbow;toast(effects.rainbow?"🌈 彩虹彈幕開啟":"🌈 彩虹彈幕關閉","ok");},
+  onekill:()=>{effects.onekill=!effects.onekill;toast(effects.onekill?"⚔️ 一擊必殺開啟":"⚔️ 一擊必殺關閉","ok");},
+  selfslow:()=>{
+    if (!firebaseReady) return;
+    fbMod.runTransaction(fbMod.ref(db, roomPath() + "/slowPoints/" + localPlayerId), cur => {
+      const v = (typeof cur === "number") ? cur : 0;
+      return v - 5;
+    }).catch(() => {});
+    playSynthSound("hit");
+    toast("🐌 自己降速 -5","warn");
+  },
+  resetboss:()=>{
+    if(!confirm("重置所有 BOSS？"))return;
+    const newSet=new Set();
+    killList.forEach(id=>{if(id.indexOf("BOSS_")!==0)newSet.add(id);});
+    killList=newSet;
+    if(firebaseReady)fbMod.remove(fbMod.ref(db,roomPath()+"/boss"));
+    boss=null;toast("🔄 BOSS 已重置","ok");
+  }
+};
+
+document.querySelectorAll("[data-action]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const need = btn.getAttribute("data-role");
+    if (!hasRole(need)) { playSynthSound("hit"); toast("❌ 需要【" + ROLE_LABELS[need] + "】權限", "err"); return; }
+    const a = cheatActions[btn.getAttribute("data-action")];
+    if (a) a();
+  });
+});
+
+$("btn-broadcast").addEventListener("click", () => {
+  if (!hasRole("Creator")) { toast("❌ 需要創作者權限", "err"); return; }
+  const input = $("broadcast-input");
+  const msg = input.value.trim();
+  if (!msg) return;
+  if (!firebaseReady) { toast("Firebase 未連線", "err"); return; }
+  fbMod.push(fbMod.ref(db, roomPath() + "/chats"), { sender: "系統廣播", role: player.role, text: "📢 " + msg, timestamp: Date.now() }).catch(() => {});
+  input.value = ""; playSynthSound("pickup");
+});
+
+async function clearChannelField(field, label) {
+  if (!hasRole("Admin")) { playSynthSound("hit"); toast("❌ 需要管理員權限", "err"); return; }
+  if (!firebaseReady) { toast("Firebase 未連線", "err"); return; }
+  if (!confirm("確定清空本頻道「" + label + "」？")) return;
+  try {
+    await fbMod.remove(fbMod.ref(db, roomPath() + "/" + field));
+    if (field === "chats") {
+      $("chat-messages").innerHTML = '<div class="text-slate-400 italic">[系統] 聊天已清空。</div>';
+      seenChatKeys.clear();
+    } else if (field === "deadEnemies") killList = new Set();
+  } catch(e) { toast("清理失敗：" + (e.message || e), "err"); }
+}
+$("btn-clear-chat").addEventListener("click", () => clearChannelField("chats", "聊天紀錄"));
+$("btn-clear-dead").addEventListener("click", () => clearChannelField("deadEnemies", "死亡標記"));
+$("btn-clear-bullets").addEventListener("click", () => {
+  if (!hasRole("Admin")) { playSynthSound("hit"); toast("❌ 需要管理員權限", "err"); return; }
+  bullets = []; particles = []; damageNumbers = [];
+  toast("⚡ 已清空本機子彈", "ok");
+});
+
+$("btn-clear-room").addEventListener("click", async () => {
+  if (!hasRole("Creator")) { playSynthSound("hit"); toast("❌ 需要創作者權限", "err"); return; }
+  if (!firebaseReady) { toast("Firebase 未連線", "err"); return; }
+  const ch = currentChannel;
+  if (!confirm("⚠ 整房清空會刪除 nexus_room_" + ch + " 全部資料。確定嗎？")) return;
+  if (!confirm("再次確認：資料無法復原。")) return;
+  try {
+    await fbMod.remove(fbMod.ref(db, "nexus_room_" + ch));
+    remotePlayers = {}; bullets = []; enemies = []; drops = []; boss = null;
+    spawnedSlices = new Set(); killList = new Set(); roomTopScore = 0; everJoined = false;
+    $("chat-messages").innerHTML = '<div class="text-slate-400 italic">[系統] 頻道已清空。</div>';
+    $("online-count").innerHTML = '<i class="fa-solid fa-user"></i> 1';
+    syncMyself();
+    toast("💣 整房已清空", "ok");
+  } catch(e) { toast("清空失敗：" + (e.message || e), "err"); }
+});
+
+$("btn-reset-data").addEventListener("click", () => {
+  if (confirm("重置本機存檔？")) {
+    localStorage.removeItem(SAVE_KEY);
+    location.reload();
+  }
+});
+
+function makeEnemyFromSlice(slice) {
+  const r = sliceRandom(slice, 2);
+  let type = "normal", h = 50, s = 1.8, w = 34;
+  if (r < .25) { type = "fast"; s = 3.4; h = 30; w = 28; }
+  else if (r < .45) { type = "tank"; s = 1; h = 160; w = 46; }
+  else if (r < .6) { type = "shooter"; s = 1.5; }
+  return { id: "E_" + slice, x: sliceRandom(slice, 3) * (canvas.width - w), y: -40, width: w, height: w, type, health: h, maxHealth: h, speed: s, cooldown: 70 };
+}
+function spawnDrop(x, y) {
+  const types = ["helmet","armor","boots","chip"];
+  return { x: Math.round(x), y: Math.round(y), item: createItem(types[Math.floor(Math.random() * types.length)]) };
+}
+function spawnBossDrop(x, y) {
+  return { x: Math.round(x), y: Math.round(y), item: createLegendaryItem() };
+}
+
+let syncTick = 0, bossSyncTick = 0;
+
+function update(t) {
+  try {
+    if (!t) t = 0;
+    frameCount++;
+    if (t - fpsTimer > 1000) { fps = frameCount; frameCount = 0; fpsTimer = t; }
+
+    if (gameOver) {
+      draw();
+      ctx.fillStyle = "rgba(0,0,0,.85)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ef4444";
+      ctx.font = "bold 42px Orbitron, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("戰術執行失敗 - 陣亡", canvas.width / 2, 420);
+      ctx.fillStyle = "#fff";
+      ctx.font = "20px 'Segoe UI', sans-serif";
+      ctx.fillText("戰場重置倒數: " + Math.ceil(respawnCountdown / 60) + " 秒", canvas.width / 2, 480);
+      ctx.textAlign = "left";
+      respawnCountdown--;
+      if (respawnCountdown <= 0) { resetGame(); player.invincible = 120; }
+      requestAnimationFrame(update);
+      return;
     }
 
-    // 2. 登入成功 -> 跳出提示 -> 連線並載入原本的遊戲網頁
-    function handleLogin(event) {
-        event.preventDefault();
-        const user = document.getElementById('login-username').value;
-        
-        // 原本要求的提示訊息
-        alert(`特工 ${user} 正在嘗試執行登入進駐...`);
-        
-        // 將特工名稱寫入右上角狀態列
-        document.getElementById('display-agent-id').innerText = user;
-        
-        // 隱藏登入介面，顯示全螢幕戰區
-        document.getElementById('auth-box').style.display = 'none';
-        
-        const gameScreen = document.getElementById('game-screen');
-        gameScreen.style.display = 'flex'; // 展開戰區主畫面
-        
-        // 🎯 核心關鍵：將原本的遊戲網址指派給內嵌框架，讓它在戰區連線後立刻加載並運行原本的功能
-        document.getElementById('game-iframe').src = "https://achilles0825-create.github.io/456836/";
+    for (const id in remotePlayers) {
+      const rp = remotePlayers[id];
+      if (rp.targetX !== undefined) {
+        rp.x += (rp.targetX - rp.x) * .3;
+        rp.y += (rp.targetY - rp.y) * .3;
+      }
+    }
+    starfield.forEach(s => { s.y += s.speed; if (s.y > canvas.height) s.y = 0; });
+
+    const now = Date.now();
+    const currentSlice = Math.floor(now / ENEMY_SLICE_MS);
+    if (enemies.length < MAX_LOCAL_ENEMIES) {
+      for (let s = currentSlice; s > currentSlice - 3; s--) {
+        if (s <= 0 || spawnedSlices.has(s)) continue;
+        spawnedSlices.add(s);
+        if (killList.has("E_" + s)) continue;
+        if (enemies.length >= MAX_LOCAL_ENEMIES) break;
+        enemies.push(makeEnemyFromSlice(s));
+      }
+    }
+    if (spawnedSlices.size > 500) {
+      const arr = Array.from(spawnedSlices).sort((a,b) => b - a).slice(0, 200);
+      spawnedSlices = new Set(arr);
     }
 
-    // 3. 註冊成功邏輯
-    function handleRegister(event) {
-        event.preventDefault();
-        const user = document.getElementById('reg-username').value;
-        alert(`正在為新特工 ${user} 建立帳籍... 建立完成！請登入進駐。`);
-        switchTab('login');
+    const bossLevel = Math.floor(roomTopScore / 40);
+    if (!boss && bossLevel > 0 && !killList.has("BOSS_" + bossLevel)) trySpawnBoss(bossLevel);
+
+    let moved = false;
+    // ★ 应用移速调整（slowPoints 为负 = 降速，为正 = 加速；移速最低 0.5）
+    const finalSpeed = Math.max(0.5, equipment.speed + slowPoints);
+    if (loggedIn && !isTypingInInput()) {
+      if (keys["KeyA"] || keys["ArrowLeft"]) { player.x -= finalSpeed; moved = true; }
+      if (keys["KeyD"] || keys["ArrowRight"]) { player.x += finalSpeed; moved = true; }
+      if (keys["KeyW"] || keys["ArrowUp"]) { player.y -= finalSpeed; moved = true; }
+      if (keys["KeyS"] || keys["ArrowDown"]) { player.y += finalSpeed; moved = true; }
     }
+    player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+    player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+    if (moved || ++syncTick % 6 === 0) syncMyself();
+
+    if (shooting && loggedIn && !shopOpen && !inventoryOpen && !adminOpen && !settingsOpen) shoot();
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if (--p.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = damageNumbers.length - 1; i >= 0; i--) {
+      const d = damageNumbers[i];
+      d.y += d.vy;
+      if (--d.life <= 0) damageNumbers.splice(i, 1);
+    }
+
+    const allTargets = [];
+    if (!effects.invisible) allTargets.push({ x: player.x, y: player.y });
+    for (const id in remotePlayers) allTargets.push({ x: remotePlayers[id].x, y: remotePlayers[id].y });
+    if (allTargets.length === 0) allTargets.push({ x: canvas.width / 2, y: canvas.height / 2 });
+
+    const slowed = effects.slowmo > 0;
+    const frozen = effects.freeze > 0 || effects.timestop > 0;
+
+    for (let ei = 0; ei < enemies.length; ei++) {
+      const e = enemies[ei];
+      if (frozen) continue;
+
+      let target = allTargets[0], minD = Infinity;
+      for (let ti = 0; ti < allTargets.length; ti++) {
+        const tp = allTargets[ti];
+        const d = (tp.x - e.x) * (tp.x - e.x) + (tp.y - e.y) * (tp.y - e.y);
+        if (d < minD) { minD = d; target = tp; }
+      }
+      const dx = target.x - e.x, dy = target.y - e.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const spd = e.speed * (slowed ? .3 : 1);
+      e.x += (dx / dist) * spd;
+      e.y += (dy / dist) * spd;
+
+      if (e.type === "shooter" && --e.cooldown <= 0) {
+        if (bullets.length < MAX_BULLETS) {
+          bullets.push({ x: e.x + 16, y: e.y + 16, vx: (dx / dist) * 5.5, vy: (dy / dist) * 5.5, enemy: true, damage: 10, color: "#ef4444", size: 4 });
+        }
+        e.cooldown = 70;
+      }
+      if (!effects.invisible && player.invincible === 0 &&
+         e.x < player.x + player.width && e.x + e.width > player.x &&
+         e.y < player.y + player.height && e.y + e.height > player.y) {
+        const dmg = Math.max(3, 14 - equipment.armor);
+        if (!effects.infiniteHealth) player.health -= dmg;
+        player.invincible = 30;
+        playSynthSound("hit"); triggerShake(6);
+        createParticles(player.x + 20, player.y + 20, "#ef4444", 10);
+        addDamageNumber(player.x + 20, player.y, dmg, "#ef4444");
+      }
+    }
+
+    if (boss && !boss.isRemote && !frozen) {
+      let target = { x: player.x, y: player.y }, minD = Infinity;
+      for (const id in remotePlayers) {
+        const rp = remotePlayers[id];
+        const d = (rp.x - boss.x) * (rp.x - boss.x) + (rp.y - boss.y) * (rp.y - boss.y);
+        if (d < minD) { minD = d; target = { x: rp.x, y: rp.y }; }
+      }
+      const dx = target.x - boss.x, dy = target.y - boss.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      boss.x += (dx / dist) * 1.3;
+      boss.y += (dy / dist) * 1.3;
+      boss.attackTimer++;
+      if (boss.attackTimer % 30 === 0 && bullets.length < MAX_BULLETS) {
+        bullets.push({ x: boss.x + 50, y: boss.y + 50, vx: (dx / dist) * 7, vy: (dy / dist) * 7, enemy: true, damage: 18, color: "#ef4444", size: 6 });
+      }
+      if (++bossSyncTick % 12 === 0 && firebaseReady) {
+        fbMod.update(fbMod.ref(db, roomPath() + "/boss"), { x: Math.round(boss.x), y: Math.round(boss.y) }).catch(() => {});
+      }
+    }
+
+    const bulletFrozen = effects.timestop > 0;
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i];
+      if (!b) continue;
+      if (bulletFrozen && b.enemy) continue;
+
+      if (b.tracking && !b.enemy) {
+        let tgt = null, minD = Infinity;
+        for (let ei = 0; ei < enemies.length; ei++) {
+          const e = enemies[ei];
+          const d = Math.hypot(e.x - b.x, e.y - b.y);
+          if (d < minD) { minD = d; tgt = e; }
+        }
+        if (boss) {
+          const d = Math.hypot(boss.x - b.x, boss.y - b.y);
+          if (d < minD) tgt = boss;
+        }
+        if (tgt) {
+          const dx = (tgt.x + tgt.width / 2) - b.x, dy = (tgt.y + tgt.height / 2) - b.y;
+          const len = Math.hypot(dx, dy) || 1;
+          b.vx = (dx / len) * 13; b.vy = (dy / len) * 13;
+        }
+      }
+
+      if (b.type === "railgun") {
+        b.life = (b.life || 5) - 1;
+        if (b.life <= 0) { bullets.splice(i, 1); continue; }
+      }
+
+      b.x += b.vx; b.y += b.vy;
+
+      if (b.x < -50 || b.x > canvas.width + 50 || b.y < -50 || b.y > canvas.height + 50) {
+        bullets.splice(i, 1);
+        continue;
+      }
+
+      if (b.enemy) {
+        if (!effects.invisible && player.invincible === 0 &&
+           b.x > player.x && b.x < player.x + player.width &&
+           b.y > player.y && b.y < player.y + player.height) {
+          const dmg = Math.max(3, (b.damage || 10) - equipment.armor);
+          if (!effects.infiniteHealth) player.health -= dmg;
+          player.invincible = 25;
+          playSynthSound("hit"); triggerShake(4);
+          createParticles(player.x + 20, player.y + 20, "#ef4444", 8);
+          addDamageNumber(player.x + 20, player.y, dmg, "#ef4444");
+          bullets.splice(i, 1);
+        }
+        continue;
+      }
+
+      if (boss && b.x > boss.x && b.x < boss.x + boss.width && b.y > boss.y && b.y < boss.y + boss.height) {
+        createParticles(b.x, b.y, "#a855f7", 5);
+        addDamageNumber(b.x, b.y, b.damage || 15, "#c084fc");
+        if (!b.piercing && b.type !== "railgun") bullets.splice(i, 1);
+        if (firebaseReady && boss.id) {
+          const rp = roomPath();
+          fbMod.runTransaction(fbMod.ref(db, rp + "/boss"), cur => {
+            if (!cur || cur.id !== boss.id) return;
+            cur.hp = Math.max(0, cur.hp - (b.damage || 15));
+            return cur;
+          }).then(res => {
+            const cur = res && res.snapshot ? res.snapshot.val() : null;
+            if (cur && cur.hp <= 0) {
+              playSynthSound("explosion"); triggerShake(15);
+              createParticles(boss.x + 50, boss.y + 50, "#a855f7", 40, 2.5);
+              tryKillEnemy(boss.id, 40, spawnBossDrop(boss.x + 40, boss.y + 40));
+              fbMod.remove(fbMod.ref(db, roomPath() + "/boss"));
+              boss = null;
+            }
+          }).catch(() => {});
+        } else {
+          boss.health -= b.damage || 15;
+          if (boss.health <= 0) {
+            playSynthSound("explosion"); triggerShake(15);
+            createParticles(boss.x + 50, boss.y + 50, "#a855f7", 40, 2.5);
+            tryKillEnemy(boss.id, 40, spawnBossDrop(boss.x + 40, boss.y + 40));
+            boss = null;
+          }
+        }
+        continue;
+      }
+
+      let hitSomething = false;
+      for (let j = enemies.length - 1; j >= 0; j--) {
+        const e = enemies[j];
+        if (b.x > e.x && b.x < e.x + e.width && b.y > e.y && b.y < e.y + e.height) {
+          if (effects.onekill) e.health = 0;
+          else e.health -= b.damage || 15;
+          createParticles(b.x, b.y, "#f59e0b", 4);
+          addDamageNumber(b.x, b.y, b.damage || 15, "#f59e0b");
+          if (b.splash) {
+            playSynthSound("explosion"); triggerShake(10);
+            createParticles(b.x, b.y, "#ef4444", 20, 2);
+            for (let ex = 0; ex < enemies.length; ex++) {
+              const en = enemies[ex];
+              if (Math.hypot(en.x - b.x, en.y - b.y) < 120) {
+                if (effects.onekill) en.health = 0;
+                else en.health -= (b.damage || 15) * .8;
+              }
+            }
+          }
+          if (e.health <= 0) {
+            createParticles(e.x + e.width / 2, e.y + e.height / 2, "#ef4444", 12);
+            tryKillEnemy(e.id, 1, spawnDrop(e.x, e.y));
+            enemies.splice(j, 1);
+            killCount++; money += effects.doubleMoney ? 2 : 1;
+            if (killCount % 3 === 0) scrap += 1;
+          }
+          if (!b.piercing && b.type !== "railgun") { bullets.splice(i, 1); hitSomething = true; break; }
+        }
+      }
+      if (hitSomething) continue;
+    }
+
+    for (let i = drops.length - 1; i >= 0; i--) {
+      const d = drops[i];
+      if (effects.magnet) {
+        const dx = (player.x + player.width / 2) - (d.x + 10);
+        const dy = (player.y + player.height / 2) - (d.y + 10);
+        const len = Math.hypot(dx, dy) || 1;
+        if (len > 5) { d.x += (dx / len) * 6; d.y += (dy / len) * 6; }
+      } else {
+        d.y += .5;
+      }
+      if (player.x < d.x + 20 && player.x + player.width > d.x && player.y < d.y + 20 && player.y + player.height > d.y) {
+        playSynthSound("pickup");
+        if (d.item.type === "heal") player.health = Math.min(player.maxHealth, player.health + 30);
+        else if (d.item.type === "scrap") scrap += 5;
+        else if (inventory.length < MAX_INVENTORY) inventory.push(d.item);
+        createParticles(player.x + 20, player.y + 20, "#38bdf8", 12);
+        drops.splice(i, 1);
+      } else if (d.y > canvas.height + 40) {
+        drops.splice(i, 1);
+      }
+    }
+
+    if (effects.infiniteHealth) player.health = player.maxHealth;
+    if (player.health > player.maxHealth) player.health = player.maxHealth;
+    if (player.health <= 0 && !effects.infiniteHealth) { gameOver = true; respawnCountdown = 180; syncMyself(); }
+    if (player.invincible > 0) player.invincible--;
+
+    if (effects.quickfire > 0) effects.quickfire--;
+    if (effects.slowmo > 0) effects.slowmo--;
+    if (effects.freeze > 0) effects.freeze--;
+    if (effects.timestop > 0) effects.timestop--;
+
+    draw();
+  } catch (err) {
+    console.error("[update]", err);
+  }
+  requestAnimationFrame(update);
+}
+
+function draw() {
+  ctx.save();
+  if (shakeIntensity > 0) {
+    const sx = (Math.random() - .5) * shakeIntensity;
+    const sy = (Math.random() - .5) * shakeIntensity;
+    ctx.translate(sx, sy);
+    shakeIntensity *= .85;
+    if (shakeIntensity < .4) shakeIntensity = 0;
+  }
+  ctx.clearRect(-20, -20, canvas.width + 40, canvas.height + 40);
+
+  ctx.fillStyle = "#fff";
+  for (let i = 0; i < starfield.length; i++) {
+    const s = starfield[i];
+    ctx.globalAlpha = s.alpha;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.strokeStyle = "rgba(30,41,59,.4)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x < canvas.width; x += 45) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+  for (let y = 0; y < canvas.height; y += 45) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  for (const id in remotePlayers) {
+    const rp = remotePlayers[id];
+    if (rp.x === undefined || rp.y === undefined) continue;
+    ctx.fillStyle = rp.skinColor || "#a855f7";
+    ctx.fillRect(rp.x, rp.y, 36, 36);
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(rp.x, rp.y, 36, 36);
+    if (settings.showNames) {
+      ctx.fillStyle = ROLE_HEX[rp.role] || "#fff";
+      ctx.font = "11px 'Segoe UI', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("[" + (ROLE_LABELS[rp.role] || "P") + "] " + (rp.name || id), rp.x + 18, rp.y - 8);
+      ctx.textAlign = "left";
+    }
+    ctx.fillStyle = "rgba(0,0,0,.6)";
+    ctx.fillRect(rp.x, rp.y - 6, 36, 4);
+    ctx.fillStyle = "#22c55e";
+    ctx.fillRect(rp.x, rp.y - 6, 36 * Math.max(0, (rp.health || 100) / 100), 4);
+  }
+
+  if (player.invincible % 6 < 3 || player.invincible === 0 || effects.invisible) {
+    if (effects.invisible) ctx.globalAlpha = .35;
+    ctx.fillStyle = player.skinColor;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(player.x, player.y, player.width, player.height);
+    const cx = player.x + player.width / 2, cy = player.y + player.height / 2;
+    const dx = mouse.x - cx, dy = mouse.y - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    ctx.strokeStyle = "#00e5ff";
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + (dx / len) * 26, cy + (dy / len) * 26);
+    ctx.stroke();
+    if (settings.showNames) {
+      ctx.fillStyle = "#facc15";
+      ctx.font = "11px 'Segoe UI', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("[" + (ROLE_LABELS[player.role] || "玩家") + "] " + player.name, cx, player.y - 10);
+      ctx.textAlign = "left";
+    }
+    if (effects.invisible) ctx.globalAlpha = 1;
+  }
+
+  // ★ 移速显示（被调整时显示提示）
+  if (slowPoints !== 0) {
+    ctx.fillStyle = slowPoints < 0 ? "#fbbf24" : "#67e8f9";
+    ctx.font = "bold 13px Orbitron, sans-serif";
+    ctx.textAlign = "center";
+    const label = (slowPoints < 0 ? "🐌 降速 " : "⚡ 加速 +") + (slowPoints < 0 ? slowPoints : slowPoints);
+    ctx.fillText(label, player.x + player.width / 2, player.y - 28);
+    ctx.textAlign = "left";
+  }
+
+  for (let i = 0; i < bullets.length; i++) {
+    const b = bullets[i];
+    let bc;
+    if (b.enemy) bc = "#ef4444";
+    else if (effects.rainbow) bc = "hsl(" + Math.floor((Date.now() / 5 + i * 20) % 360) + ", 100%, 60%)";
+    else bc = b.color || (weaponConfig[b.type] ? weaponConfig[b.type].color : "#facc15");
+    ctx.fillStyle = bc;
+    if (b.type === "railgun") ctx.fillRect(b.x - 2, b.y - 2, 10, 10);
+    else ctx.fillRect(b.x, b.y, b.size || 5, b.size || 5);
+  }
+
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    ctx.fillStyle = e.type === "fast" ? "#f97316" : e.type === "tank" ? "#991b1b" : e.type === "shooter" ? "#a855f7" : "#ec4899";
+    ctx.fillRect(e.x, e.y, e.width, e.height);
+    ctx.fillStyle = "rgba(0,0,0,.6)";
+    ctx.fillRect(e.x, e.y - 7, e.width, 5);
+    ctx.fillStyle = "#22c55e";
+    ctx.fillRect(e.x, e.y - 7, e.width * Math.max(0, e.health / e.maxHealth), 5);
+  }
+
+  if (boss) {
+    ctx.fillStyle = "#a855f7";
+    ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+    ctx.strokeStyle = "#c084fc";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(boss.x, boss.y, boss.width, boss.height);
+    ctx.fillStyle = "rgba(15,23,42,.85)";
+    ctx.fillRect(220, 50, 460, 22);
+    ctx.fillStyle = "#a855f7";
+    ctx.fillRect(220, 50, 460 * Math.max(0, boss.health / boss.maxHealth), 22);
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(220, 50, 460, 22);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 13px Orbitron, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("霸主 BOSS", 450, 42);
+    ctx.textAlign = "left";
+  }
+
+  for (let i = 0; i < drops.length; i++) {
+    const d = drops[i];
+    let bc = "#fff";
+    if (d.item.type === "heal") bc = "#22c55e";
+    else if (d.item.type === "scrap") bc = "#00e5ff";
+    else bc = rarityMap[d.item.rarity] ? rarityMap[d.item.rarity].color : "#fff";
+    ctx.shadowColor = bc; ctx.shadowBlur = 12;
+    ctx.fillStyle = bc; ctx.fillRect(d.x, d.y, 20, 20);
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
+    ctx.strokeRect(d.x, d.y, 20, 20);
+  }
+
+  if (settings.showDamageNumbers) {
+    for (let i = 0; i < damageNumbers.length; i++) {
+      const d = damageNumbers[i];
+      ctx.globalAlpha = Math.max(0, d.life / d.maxLife);
+      ctx.fillStyle = d.color;
+      ctx.font = "bold 14px Orbitron, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("-" + d.amount, d.x, d.y);
+      ctx.textAlign = "left";
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  if (settings.crosshair === "dot") {
+    ctx.fillStyle = "#00e5ff";
+    ctx.shadowColor = "#00e5ff"; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+  } else if (settings.crosshair === "cross") {
+    ctx.strokeStyle = "#00e5ff"; ctx.lineWidth = 2;
+    ctx.shadowColor = "#00e5ff"; ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.moveTo(mouse.x - 12, mouse.y); ctx.lineTo(mouse.x - 4, mouse.y);
+    ctx.moveTo(mouse.x + 4, mouse.y); ctx.lineTo(mouse.x + 12, mouse.y);
+    ctx.moveTo(mouse.x, mouse.y - 12); ctx.lineTo(mouse.x, mouse.y - 4);
+    ctx.moveTo(mouse.x, mouse.y + 4); ctx.lineTo(mouse.x, mouse.y + 12);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.fillStyle = "#0a0f1d";
+  ctx.fillRect(0, 0, canvas.width, 48);
+  ctx.strokeStyle = "#1e293b";
+  ctx.strokeRect(0, 0, canvas.width, 48);
+
+  ctx.fillStyle = "#7f1d1d";
+  ctx.fillRect(12, 14, 150, 20);
+  ctx.fillStyle = "#22c55e";
+  ctx.fillRect(12, 14, 150 * Math.max(0, player.health / player.maxHealth), 20);
+  ctx.strokeStyle = "#fff";
+  ctx.strokeRect(12, 14, 150, 20);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 12px Orbitron, sans-serif";
+  ctx.fillText("HP: " + Math.max(0, Math.floor(player.health)) + "/" + player.maxHealth, 18, 28);
+  ctx.fillText("分: " + score, 180, 28);
+  ctx.fillText("$: " + money, 270, 28);
+  ctx.fillText("零件: " + scrap, 360, 28);
+  ctx.fillText("武器: " + weaponConfig[weapon].name + " Lv." + weaponLevel[weapon], 450, 28);
+  ctx.font = "10px 'Segoe UI', sans-serif";
+  ctx.fillText("[1-6]換槍 [B]商店 [I]背包(" + inventory.length + "/" + MAX_INVENTORY + ") [K]管理 [O]設定 [T]聊天", 640, 28);
+
+  // ★ 左上角移速显示
+  const sp = Math.max(0.5, equipment.speed + slowPoints);
+  ctx.font = "bold 11px Orbitron, sans-serif";
+  ctx.fillStyle = slowPoints < 0 ? "#fbbf24" : (slowPoints > 0 ? "#67e8f9" : "#94a3b8");
+  ctx.fillText("移速: " + sp.toFixed(1) + (slowPoints !== 0 ? (" (" + (slowPoints > 0 ? "+" : "") + slowPoints + ")") : ""), 18, 44);
+
+  ctx.font = "bold 11px Orbitron, sans-serif";
+  ctx.fillStyle = ROLE_HEX[player.role] || "#67e8f9";
+  ctx.fillText("身份: " + ROLE_LABELS[player.role], canvas.width - 170, 22);
+
+  ctx.fillStyle = "rgba(10,15,30,.75)";
+  ctx.fillRect(canvas.width - 170, 60, 160, 130);
+  ctx.strokeStyle = "rgba(56,189,248,.3)";
+  ctx.strokeRect(canvas.width - 170, 60, 160, 130);
+  ctx.fillStyle = "#38bdf8";
+  ctx.font = "bold 11px Orbitron, sans-serif";
+  ctx.fillText("🏆 排行榜", canvas.width - 160, 78);
+
+  const leaderList = [{ name: player.name, score: score, self: true, role: player.role }];
+  for (const id in remotePlayers) {
+    leaderList.push({ name: remotePlayers[id].name || id, score: remotePlayers[id].score || 0, role: remotePlayers[id].role });
+  }
+  leaderList.sort((a, b) => b.score - a.score);
+  leaderList.slice(0, 4).forEach((p, idx) => {
+    let c;
+    if (p.role && p.role !== "Player") c = ROLE_HEX[p.role] || "#cbd5e1";
+    else c = p.self ? "#facc15" : "#cbd5e1";
+    ctx.fillStyle = c;
+    ctx.font = "11px 'Segoe UI', sans-serif";
+    ctx.fillText((idx + 1) + ". " + String(p.name || "").substring(0, 8) + ": " + p.score, canvas.width - 160, 98 + idx * 20);
+  });
+
+  if (settings.showFPS) {
+    ctx.fillStyle = "rgba(10,15,30,.75)";
+    ctx.fillRect(canvas.width - 90, 200, 80, 26);
+    ctx.strokeStyle = "rgba(56,189,248,.3)";
+    ctx.strokeRect(canvas.width - 90, 200, 80, 26);
+    const fpsColor = fps >= 55 ? "#22c55e" : fps >= 30 ? "#facc15" : "#ef4444";
+    ctx.fillStyle = fpsColor;
+    ctx.font = "bold 12px Orbitron, sans-serif";
+    ctx.fillText("FPS: " + fps, canvas.width - 82, 218);
+  }
+
+  ctx.restore();
+}
+
+function resetGame() {
+  player.health = player.maxHealth;
+  player.x = 430; player.y = 780;
+  bullets = []; enemies = []; boss = null;
+  drops = []; particles = []; damageNumbers = [];
+  score = 0; killCount = 0; gameOver = false;
+}
+
+requestAnimationFrame(update);
+initFirebase();
 </script>
-
 </body>
 </html>
